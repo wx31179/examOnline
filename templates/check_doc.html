@@ -1,0 +1,146 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/dataTables.bootstrap.min.js' %}"></script>
+    <!--<script src="{% static 'js/addTab.js' %}"></script>!-->
+    <link href="{% static 'css/bootstrap.min.css' %}?v=5.8" rel="stylesheet">
+    <link href="{% static 'css/custom.css' %}?v=1.1" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body id="main">
+    <div class="container-fluid">
+        <div class="row clearfix">
+            <div class="col-lg-12">
+                <ul id="tab_tittle_child" class="nav nav-tabs">
+                    <li class="active"><a id="home_page" data-toggle="tab" href="#home">首页</a></li>
+                </ul>
+                <div id="tab_container_child" class="tab-content">
+                    <div id="home" class="tab-pane fade in active">
+                        <div class="row clearfix">
+                            <h3 align="center"><b>知识库</b></h3>
+                            <div class="col-lg-8">
+
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="col-lg-3">
+                                    <button class="btn btn-primary" onclick="gotoupload_doc()">上传Office文档</button>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row clearfix" style="padding-top: 20px">
+                            <div class="col-lg-12">
+                                <table id="docData" width="100%" class="table  table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: left;" >文档名称</th>
+                                            <th style="text-align: left;" >标签</th>
+                                            <th style="text-align: left;" >所属项目</th>
+                                            <th style="text-align: left;" >是否可编辑</th>
+                                            <th style="text-align: left;" >创建时间</th>
+                                            <th style="text-align: left;" >提交人</th>
+                                            <th style="text-align: left;" >操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for doc in doc_info_all  %}
+                                        <tr>
+                                            <td align="left"><a href="javascript:void(0)" onclick="check_user('{{ doc.doc_id }}', '{{ doc.url }}','{{ doc.path }}','{{ doc.name }}')">{{ doc.name }}</a><br></td>
+                                            {% if doc.tag == None %}
+                                                <td align="left"></td>
+                                            {% else %}
+                                                <td align="left">{{ doc.tag}}</td>
+                                            {% endif %}
+                                            <td align="left">{{ doc.P_Type}}</td>
+                                            <td align="left">{{ doc.edit}}</td>
+                                            <td align="left">{{ doc.create_time|date:'Y-m-d H:i:s'}}</td>
+                                            <td align="left">{{ doc.submitter}}</td>
+                                            {% if request.session.username == doc.submitter or request.session.is_admin != 0 %}
+                                                <td align="left"><a href="javascript:void(0);" onclick="delete_doc('{{ doc.name }}')">删除</a>  <a href="{% url 'edit_doc' %}?doc={{ doc.name }}">修改</a> </td>
+                                            {% else %}
+                                                <td align="left">删除 修改</td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</body>
+<script>
+    $(document).ready(function() {
+        $('#docData').DataTable();
+    });
+    function gotoupload_doc() {
+        window.location.href="{% url 'upload_doc' %}"
+
+    }
+    function deltab(id,name) {
+        document.getElementById(name).remove();
+        document.getElementById(id).remove();
+        document.getElementById("home_page").click()
+
+    }
+    function add_doc_tab(id,url,tag,name) {
+        var tab_exist = document.getElementById(tag);
+        if (tab_exist) {
+            tab_exist.click()
+        } else {
+            var child_tittle = $("#tab_tittle_child");
+            var child_content = $("#tab_container_child");
+            var node_tittle_child = '<li id='+'"'+name+'"'+'><a id=' + '"' + tag + '"' + ' data-toggle="tab" href="' + '#' + id + '"' + '>' + name +'\xa0\xa0'+'<button class="close" aria-hidden="true" onclick="deltab('+'\''+id+'\''+','+'\''+name+'\''+')"><span class="glyphicon glyphicon-remove-circle"> </span></button>'+ '</a></li>';
+            var node_content_child = '    <div id="' + id + '"' + ' class="tab-pane fade">\n' +
+                                    '<div class="embed-responsive embed-responsive-4by3">\n' +
+                                    '<iframe scrolling="auto" src="'+url+'">\n' +
+                                    '</iframe>\n' +
+                                    '</div>\n' +
+                                    '    </div>';
+            child_tittle.append(node_tittle_child);
+            child_content.append(node_content_child);
+            /*var b = document.getElementById("tab_container_child").innerHTML;
+            document.getElementById("tab_container_child").innerHTML = b + '    <div id="' + id + '"' + ' class="tab-pane fade">\n' +
+                '<div class="embed-responsive embed-responsive-4by3">\n' +
+                '<iframe scrolling="auto" src="'+url+'">\n' +
+                '</iframe>\n' +
+                '</div>\n' +
+                '    </div>';*/
+
+            document.getElementById(tag).click()
+        }
+    }
+    function check_user(id,url,tag,name) {
+        $.get('/check_user/',function (data) {
+            if (data["user"]==="guest"){
+                location.reload(true)
+            } else {
+                add_doc_tab(id,url,tag,name)
+
+            }
+
+
+        })
+    }
+    function delete_doc(doc_name) {
+        if (confirm("确定删除该文档？")){
+            $.get('/delete_doc/',{"doc_name":doc_name},function (data) {
+                alert(data["message"]);
+                location.reload(true)
+            })
+
+        }
+    }
+</script>
+</html>

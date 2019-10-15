@@ -1,0 +1,107 @@
+
+.panel-green{
+  border-color: #9affa5;
+}
+.panel-green > .panel-heading{
+    color: black;
+    background-color: #9affa5;
+    border-color: #9affa5;
+}
+.panel-green > .panel-heading + .panel-collapse > .panel-body {
+  border-top-color: #9affa5;
+}
+.panel-green > .panel-heading .badge {
+  color: #9affa5;
+  background-color: #9affa5;
+}
+.panel-green > .panel-footer + .panel-collapse > .panel-body {
+  border-bottom-color: #9affa5;
+}
+
+
+.panel-gray{
+  border-color: rgba(107,138,165,0.78);
+}
+.panel-gray > .panel-heading{
+    color: black;
+    background-color: rgba(107,138,165,0.78);
+    border-color: rgba(107,138,165,0.78);
+}
+.panel-gray > .panel-heading + .panel-collapse > .panel-body {
+  border-top-color: rgba(107,138,165,0.78);
+}
+.panel-gray > .panel-heading .badge {
+  color: rgba(107,138,165,0.78);
+  background-color: rgba(107,138,165,0.78);
+}
+.panel-gray > .panel-footer + .panel-collapse > .panel-body {
+  border-bottom-color: rgba(107,138,165,0.78);
+}
+
+.panel-blue{
+  border-color: rgb(18, 255, 255);
+}
+.panel-blue > .panel-heading{
+    color: black;
+    background-color: rgb(18, 255, 255);
+    border-color: rgb(18, 255, 255);
+}
+.panel-blue > .panel-heading + .panel-collapse > .panel-body {
+  border-top-color: rgb(18, 255, 255);
+}
+.panel-blue > .panel-heading .badge {
+  color: rgb(18, 255, 255);
+  background-color: rgb(18, 255, 255);
+}
+.panel-blue > .panel-footer + .panel-collapse > .panel-body {
+  border-bottom-color: rgb(18, 255, 255);
+}
+
+.panel-yellow{
+  border-color: rgba(241,255,25,0.51);
+}
+.panel-yellow > .panel-heading{
+    color: black;
+    background-color: rgba(241,255,25,0.51);
+    border-color: rgba(241,255,25,0.51);
+}
+.panel-yellow > .panel-heading + .panel-collapse > .panel-body {
+  border-top-color: rgba(241,255,25,0.51);
+}
+.panel-yellow > .panel-heading .badge {
+  color: rgba(241,255,25,0.51);
+  background-color: rgba(241,255,25,0.51);
+}
+.panel-yellow > .panel-footer + .panel-collapse > .panel-body {
+  border-bottom-color: rgba(241,255,25,0.51);
+}
+
+.scrollable-warning {
+  max-height: 280px;
+  overflow-y: scroll;
+}
+
+.scrollable-server {
+  height: 400px;
+  overflow-y: scroll;
+}
+
+.scrollable-log {
+  max-height: 280px;
+  overflow-y: scroll;
+}
+
+.textcenter{
+    text-align: center;
+    display: block;
+}
+body#main{
+    background-color: #f9f9f9;
+}
+
+/*.cont{
+    background:url("../images/backimage.jpg");
+    /*background-size:cover;
+
+    background-attachment:fixed;
+}

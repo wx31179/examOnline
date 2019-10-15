@@ -1,0 +1,131 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/fileinput.min.js' %}"></script>
+    <script src="{% static 'js/zh.js' %}"></script>
+    <link href="{% static 'css/bootstrap.min.css' %}?v=5.8" rel="stylesheet">
+    <link href="{% static 'css/fileinput.min.css' %}" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body id="main">
+<div class="container-fluid">
+    <div class="row clearfix">
+    <hr>
+        <div class="col-lg-4">
+
+        </div>
+        <div class="col-lg-4">
+            <label for="doc_project">选择文档所属项目:</label>
+            <div class="input-group">
+                <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
+                <select class="form-control" id="doc_project" name="doc_project" required onchange="edit_click()">
+                    <option value="{{ user_p.P_Type }}">{{ user_p.P_Type }}</option>
+                    {% for type in typelist %}
+                    <option value="{{ type.Total_Type_values}}">{{ type.Total_Type_values}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row clearfix">
+        <hr>
+        <div class="col-lg-4">
+
+        </div>
+        <div class="col-lg-4">
+            <label for="tag">标签:</label>
+            <div class="input-group">
+                <span class="input-group-addon"><span class="glyphicon glyphicon-tags"></span></span>
+                <input class="form-control" type="text" id="tag" name="tag" placeholder="填写多个标签可用‘ ，’分割">
+            </div>
+        </div>
+    </div>
+    <div class="row clearfix">
+        <hr>
+        <div class="col-lg-4">
+
+        </div>
+        <div class="col-lg-4">
+            <label for="edit">文档是否可编辑：</label>
+            <div class="input-group">
+                <input  type="radio" name="edit" value="False" id="False" onclick="edit_click()">
+                <label for="False">False</label><br>
+                <input  type="radio" name="edit" value="True" id="True" onclick="edit_click()">
+                <label for="True">True</label><br>
+            </div>
+        </div>
+    </div>
+    <div class="row clearfix">
+        <hr>
+        <div class="col-lg-12" id="show_upload">
+
+        </div>
+    </div>
+</div>
+
+</body>
+<script>
+    function edit_click(){
+        var pr = document.getElementById('doc_project').value;
+        var tag = document.getElementById('tag').value;
+        var chose;
+        var chose_edit = document.getElementsByName("edit");
+        for(var i=0;i<chose_edit.length;i++) {
+            if (chose_edit.item(i).checked) {
+                chose = chose_edit.item(i).getAttribute("value");
+                if(chose === "True"){
+                    document.getElementById("show_upload").innerHTML = "";
+                    document.getElementById("show_upload").innerHTML ='<label class="control-label" for="testfile">上传文件</label>\n' +
+                                                                ' <input type="file" id="testfile" name="doc" value="False" multiple />';
+
+                $('#testfile').fileinput({
+                    language: 'zh',
+                    uploadUrl: '{% url 'upload_doc' %}',
+                    showCaption: true,
+                    showUpload: true,
+                    showRemove: true,
+                    showClose: true,
+                    showBrowse:true,
+                    uploadExtraData:{"edit":"True","pr":pr,"tag":tag},　　
+                    allowedFileExtensions:["doc","docx","ppt","pptx","xls","xlsx","pdf"],
+                    layoutTemplates:{
+                        actionDelete: ''
+                    },
+                    browseClass: 'btn btn-primary'
+                });
+                }
+
+            } else if (chose === "False"){
+                document.getElementById("show_upload").innerHTML = "";
+                document.getElementById("show_upload").innerHTML ='<label class="control-label" for="testfile">上传文件</label>\n' +
+                                                                ' <input type="file" id="testfile" name="doc" value="False" multiple />';
+
+
+                $('#testfile').fileinput({
+                    language: 'zh',
+                    uploadUrl: '{% url 'upload_doc' %}',
+                    showCaption: true,
+                    showUpload: true,
+                    showRemove: true,
+                    showClose: true,
+                    showBrowse:true,
+                    uploadExtraData:{"edit":"False","pr":pr,"tag":tag},　　
+                    allowedFileExtensions:["doc","docx","ppt","pptx","xls","xlsx","pdf"],
+                    layoutTemplates:{
+                        actionDelete: ''
+                    },
+                    browseClass: 'btn btn-primary'
+                });
+            }
+
+        }
+    }
+
+
+</script>
+</html>

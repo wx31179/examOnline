@@ -1,0 +1,424 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/dataTables.bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}?v=5.8">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=1.1">
+    <meta charset="UTF-8">
+    <title>Title</title>
+<style>
+img{
+    width: 700px;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+}
+</style>
+</head>
+<body id="main">
+<div class="container-fluid">
+     <div class="row clearfix">
+            <div class="col-lg-12">
+                <ul id="tab_tittle_doc" class="nav nav-tabs">
+                    <li class="active"><a id="home_page" data-toggle="tab" href="#home">首页</a></li>
+                </ul>
+                <div id="tab_container_doc" class="tab-content">
+                    <div id="home" class="tab-pane fade in active">
+                        <div class="row clearfix">
+                            <div class="col-lg-12">
+                                <h3 align="center"><b>我的题库</b></h3>
+                                    <hr>
+                                    <div class="row clearfix">
+                                        <div class="col-lg-12">
+                                           <table id="my_exam_1" class="table table-bordered table-condensed table-hover table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="text-align: center;" >题目类型</th>
+                                                        <th style="text-align: center;" >题目内容</th>
+                                                        <th style="text-align: center;" >项目</th>
+                                                        <th style="text-align: center;" >等级</th>
+                                                        <th style="text-align: center;" >提交时间</th>
+                                                        <th style="text-align: center;" >修改时间</th>
+                                                        <th style="text-align: center;" >创建人</th>
+                                                        <th style="text-align: center;" >操作</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for exam in exams  %}
+                                                    <tr>
+                                                        <td align="center">{{ exam.T_type }}</td>
+                                                        <td align="center"><a href="#" data-html="true" title="内容" data-container="body" data-toggle="popover"  data-content="{{ exam.content }}">点击显示内容</a></td>
+                                                        <td align="center">{{ exam.P_Type}}</td>
+                                                        <td align="center" >{{ exam.T_Level }}</td>
+                                                        <td align="center">{{ exam.create_Time|date:'Y-m-d H:i:s'}}</td>
+                                                        <td align="center">{{ exam.mod_Time|date:'Y-m-d H:i:s'}}</td>
+                                                        <td align="center">{{ exam.submitter}}</td>
+                                                        <td align="center"><a href="javascript:void(0)" onclick =check_tab("{% url 'check_exam' %}?id={{ exam.exam_id }}","{{ exam.id }}","{{ exam.exam_id }}","查看题目")>查看</a> <a href="javascript:void(0)" onclick=check_tab("{% url 'edit_exam' %}?id={{ exam.exam_id }}&type={{ exam.T_type }}","{{ exam.id }}","{{ exam.exam_id }}","修改题目")>修改</a> <a href="javascript:void(0)" onclick="delete_exam('{{ exam.exam_id }}')">删除</a></td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row clearfix">
+                                        <div class="col-lg-6">
+                                            <div class="btn-group">
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="create_exam('/create_exam/?Type=R','创建单选题')">创建单选题</button>
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="create_exam('/create_exam/?Type=M','创建多选题')">创建多选题</button>
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="create_exam('/create_exam/?Type=W','创建问答题')">创建问答题</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+     </div>
+
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width: 850px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">
+
+                    </h4>
+                </div>
+                <div class="modal-body" id="content" style="width: 850px; margin: 0px auto;">
+                    <!--<div class="form-group">
+                        <label for="R_editor">题目内容</label>
+                        <textarea id="R_editor" name="R_content" class="form-control"  required></textarea>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="R_project">所属项目</label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
+                                            <select class="form-control" id="R_project" name="R_project" required>
+                                                <option value=""></option>
+                                                {%  for type in typelist %}
+                                                    <option value="{{ type.Total_Type_values}}">{{ type.Total_Type_values }}</option>
+                                                {% endfor %}
+                                            </select>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="R_level">题目等级</label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
+                                    <select class="form-control" id="R_level" name="R_level" required>
+                                        {% for level in levellist %}
+                                        <option value="{{ level.Total_Type_values }}">{{ level.Total_Type_values }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="R_all_answers" style="padding: 10px">题目选项</label>
+                        <div class="input-group" id="saltIpGroup">
+                            <button class="btn btn-info" type="button" data-toggle="tooltip" title="新增" id="addSaltIpGrpBtn" onclick="addbutton_all_R(this)" ><span class="glyphicon glyphicon-plus"></span></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="R_right_answer" style="padding: 10px">题目正确选项</label>
+                        <textarea name="R_right_answer" id="R_right_answer" class="form-control" required placeholder="单选题只能有一个正确选项"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <input name="exam_type" value="R" style="display: none">
+                    </div>!
+                    <iframe scrolling="auto" src={% url 'create_exam' %}?Type=R style="width: 800px; margin: 0px; height: 850px" frameborder="0">
+
+                    </iframe>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--<div class="modal fade" id="myModal_2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width: 850px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">
+                            创建多选题
+                    </h4>
+                </div>
+                <form role="form" id="M_form" method="POST" action="">
+                    {% csrf_token %}
+                    <div class="modal-body" style="width: 850px; margin: 0px auto;">
+                        <div class="form-group">
+                            <label for="M_editor">题目内容</label>
+                            <textarea id="M_editor" name="M_content" class="form-control" required></textarea>
+                        </div>
+
+                        <div class="row clearfix">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="M_project">所属项目</label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
+                                                <select class="form-control" id="M_project" name="M_project" required>
+                                                    <option value=""></option>
+                                                    {%  for type in typelist %}
+                                                        <option value="{{ type.Total_Type_values}}">{{ type.Total_Type_values }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="M_level">题目等级</label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
+                                        <select class="form-control" id="M_level" name="M_level" required>
+                                            {% for level in levellist %}
+                                            <option value="{{ level.Total_Type_values }}">{{ level.Total_Type_values }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="M_all_answer" style="padding: 10px">题目选项</label>
+                            <div class="input-group" id="saltIpGroup">
+                                <button class="btn btn-info" type="button" data-toggle="tooltip" title="新增" id="addSaltIpGrpBtn" onclick="addbutton_all_M(this)" ><span class="glyphicon glyphicon-plus"></span></button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="M_right_answer" style="padding: 10px">题目正确选项</label>
+                            <div class="input-group" id="saltIpGroup">
+                                <button class="btn btn-info" type="button" data-toggle="tooltip" title="新增" id="addSaltIpGrpBtn" onclick="addbutton_right(this)" ><span class="glyphicon glyphicon-plus"></span></button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                                <input name="exam_type" value="M" style="display: none">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="diff_M(this)">创建</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myModal_3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width: 850px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">
+                                创建问答题
+                    </h4>
+                </div>
+                <form role="form" id="W_form" method="POST" action="">
+                    {% csrf_token %}
+                    <div class="modal-body" style="width: 850px; margin: 0px auto;">
+                        <div class="form-group">
+                            <label for="W_editor">题目内容</label>
+                            <textarea id="W_editor" name="W_content" class="form-control" required></textarea>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="W_project">所属项目</label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
+                                                <select class="form-control" id="W_project" name="W_project" required>
+                                                    <option value=""></option>
+                                                    {%  for type in typelist %}
+                                                        <option value="{{ type.Total_Type_values}}">{{ type.Total_Type_values }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="W_level">题目等级</label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
+                                        <select class="form-control" id="W_level" name="W_level" required>
+                                            {% for level in levellist %}
+                                            <option value="{{ level.Total_Type_values }}">{{ level.Total_Type_values }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="W_right_answer" style="padding: 10px">题目答案</label>
+                            <textarea id="W_right_answer" name="W_right_answer" class="form-control" placeholder="简答题可以不用填写答案"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="input-button">创建</button>
+                    </div>
+                    <div class="form-group">
+                        <input name="exam_type" value="W" style="display: none">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>!-->
+
+</body>
+<script>
+$(document).ready(function() {
+    $("[data-toggle='popover']").popover();
+    $('#my_exam_1').DataTable();
+
+    /*$(function () {
+        $(function () {
+            var editor, toolbar;
+            Simditor.locale = 'zh-CN';
+            toolbar = ['title', 'bold', 'italic', 'underline', 'strikethrough',
+                'fontScale', 'color', '|', 'ol', 'ul', 'blockquote',
+                'code', 'table', '|', 'link', 'image', 'hr', '|',
+                'indent', 'outdent', 'alignment'];
+
+            editor = new Simditor({
+                textarea: $('#M_editor'),
+                placeholder: '这里输入题目内容...',
+                toolbar: toolbar,
+                pasteImage: true,
+                upload: {
+                    url: '/upload/',
+                    params: null,
+                    fileKey: "upload_file",
+                    connectionCount: 3,
+                    leaveConfirm: "正在上传,确定要取消上传文件吗?"
+                }
+            });
+        });
+    }).call(this);
+
+
+    $(function () {
+        $(function() {
+        var editor,toolbar;
+        Simditor.locale = 'zh-CN';
+        toolbar = ['title', 'bold', 'italic', 'underline', 'strikethrough',
+            'fontScale', 'color', '|', 'ol', 'ul', 'blockquote', 'code',
+            'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent',
+            'alignment'];
+
+        editor = new Simditor({
+              textarea: $('#R_editor'),
+              placeholder: '这里输入题目内容...',
+              toolbar: toolbar,
+              pasteImage: true,
+              defaultImage: '/simditor/images/image.png',
+              upload: {
+                url: '/upload/',
+                params: null,
+                fileKey: "upload_file",
+                connectionCount: 3,
+                leaveConfirm: "正在上传,确定要取消上传文件吗?"
+              }
+            });
+        });
+    }).call(this);
+
+
+
+
+    $(function () {
+        $(function() {
+        var editor,toolbar;
+        Simditor.locale = 'zh-CN';
+        toolbar = ['title', 'bold', 'italic', 'underline',
+            'strikethrough', 'fontScale', 'color', '|',
+            'ol', 'ul', 'blockquote', 'code', 'table',
+            '|', 'link', 'image', 'hr', '|', 'indent',
+            'outdent', 'alignment'];
+
+        editor = new Simditor({
+              textarea: $('#W_editor'),
+              placeholder: '这里输入题目内容...',
+              toolbar: toolbar,
+              pasteImage: true,
+              defaultImage: '/simditor/images/image.png',
+              upload: {
+                url: '/upload/',
+                params: null,
+                fileKey: "upload_file",
+                connectionCount: 3,
+                leaveConfirm: "正在上传,确定要取消上传文件吗?"
+              }
+            });
+
+        });
+    }).call(this);*/
+
+});
+function check_tab(url,id,exam_id,action) {
+    var tab_exist = document.getElementById(id);
+    if(tab_exist){
+        tab_exist.click()
+    } else{
+        var tittle = $("#tab_tittle_doc");
+        var content = $("#tab_container_doc");
+        var node_content = '<div id= "'+id+'"'+' class="tab-pane fade">\n' +
+                                '</div>';
+        var node_tittle= '<li id='+'"'+exam_id+'"'+'><a id='+'"'+exam_id+id+'"'+ ' data-toggle="tab" href="'+'#'+id+'"'+'>'+action+'\xa0\xa0'+'<button class="close" aria-hidden="true" onclick="deltab('+'\''+id+'\''+','+'\''+exam_id+'\''+')"><span class="glyphicon glyphicon-remove-circle"> </span></button>'+'</a></li>';
+        tittle.append(node_tittle);
+        content.append(node_content);
+        $('#'+id).load(url);
+        document.getElementById(exam_id+id).click();
+    }
+}
+function deltab(id,name) {
+   document.getElementById(name).remove();
+   document.getElementById(id).remove();
+   document.getElementById("home_page").click()
+
+}
+function create_exam(url,tittle) {
+    document.getElementById("myModalLabel").innerHTML = tittle;
+    $("#content").load(url)
+
+}
+
+    function delete_exam(id) {
+       if(confirm("确定删除此题吗？")){
+           $.get('/delete_exam/',{"id":id},function (data) {
+                if(data["result"]===true){
+                    location.reload(true)
+                }else{
+                    alert(data["result"])
+                }
+           })
+       }else{
+           return false
+       }
+
+
+
+    }
+</script>
+</html>

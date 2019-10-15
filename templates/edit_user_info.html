@@ -1,0 +1,43 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <link href="{% static 'css/bootstrap.min.css' %}?v=5.8" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row clearfix">
+            <hr>
+            <div class="col-lg-4">
+
+            </div>
+            <div class="col-lg-4">
+                <form role="form" method="post" action="">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="edit_project">选择你的项目组:</label>
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
+                                <select class="form-control" id="edit_project" name="project" required>
+                                    <option value=""></option>
+                                    {%  for type in typelist %}
+                                    <option value="{{ type.Total_Type_values}}">{{ type.Total_Type_values }}</option>
+                                    {% endfor %}
+                                </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class=" btn btn-primary">提交</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

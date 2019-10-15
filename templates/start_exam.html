@@ -1,0 +1,174 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/FileSaver.js' %}"></script>
+    <script src="{% static 'js/jquery.wordexport.js' %}?v=0.1"></script>
+    <link href="{% static 'css/bootstrap.min.css' %}?v=5.8" rel="stylesheet">
+    <link href="{% static 'css/custom.css' %}?v=1.2" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>在线测试试卷</title>
+<style>
+p{
+    font-size: 20px;
+}
+img{
+    width: 800px;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+}
+input:checked + span{
+    color:#ffff00;
+}
+</style>
+</head>
+<body onload="goPage(1,15)" id="main">
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-lg-12" align="right" style="padding-top: 10px"><a class="btn jquery-word-export" href="javascript:void(0)"><span class="glyphicon glyphicon-save" style="color: rgb(136, 140, 255);"> 保存为Word</span></a></div>
+            <div class="col-lg-12" id="pagecontent">
+                <form id="test" role="form" method="POST" action="">
+                    {% csrf_token %}
+                    <table id="idData" width="100%" class=" table table-bordered table-condensed">
+                        <caption style="text-align: center;font-size: 30px">{{ P_Type }}在线测试<p class='text-center' > 试卷模式：{{ test_range }} | 测试时间：{{ test_time }}分钟 </p><p id="time" style="color: #00dd00"></p>
+                        <p style="color: red">考试开始后不要关闭考试界面，否则成绩会强制为0，也不要刷新界面</p></caption>
+                    <tr><td><h3>单选题</h3></td></tr>
+                        {% for exam in exam_info_R %}
+                        <tr class="info">
+                            <td>
+                                {% autoescape off %}
+                                {{ exam.content  }}
+                                {% endautoescape %}
+                                <label for="answer">选项</label>
+                                <div class="form-group" id="answer">
+                                    {% for amswer in exam.answers %}
+                                    <label for="{{ amswer }}"><input type="radio" name="{{ exam.exam_id }}" id="{{ amswer }}" value="{{ amswer }}">  <span>{{ amswer }}</span></label><br>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    <tr><td><h3>多选题</h3></td></tr>
+                        {% for exam in exam_info_M %}
+                        <tr class="info">
+                            <td>
+                                {% autoescape off %}
+                                {{ exam.content  }}
+                                {% endautoescape %}
+                                <label for="answer">选项</label>
+                                <div class="form-group" id="answer">
+                                    {% for amswer in exam.answers %}
+                                    <label for="{{ amswer }}"><input type="checkbox" name="{{ exam.exam_id }}" id="{{ amswer }}" value="{{ amswer }}">  <span>{{ amswer }}</span></label><br>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    <tr><td><h3>问答题</h3></td></tr>
+                        {% for exam in exam_info_W %}
+                        <tr class="info">
+                            <td>
+                                {% autoescape off %}
+                                {{ exam.content  }}
+                                {% endautoescape %}
+                                <label for="answer">答案</label>
+                                <div class="form-group" id="answer">
+                                    <textarea style="min-width: 90%" rows="5" name="{{ exam.exam_id }}" ></textarea>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    <p style="text-align: center" id="barcon" name="barcon"></p>
+                    <div class="modal-footer">
+                        <button class=" btn btn-primary" type="submit" name="test_id" value="{{ test_id }}">提交</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    jQuery(document).ready(function($) {
+
+        $("a.jquery-word-export").click(function(event) {
+
+            $("#idData").wordExport();
+        });
+    });
+
+    function goPage(pno,psize){
+        var itable = document.getElementById("idData");
+        var num = itable.rows.length;//表格所有行数(所有记录数)
+        console.log(num);
+        var totalPage = 0;//总页数
+        var pageSize = psize;//每页显示行数
+        //总共分几页
+        if(num/pageSize > parseInt(num/pageSize)){
+                totalPage=parseInt(num/pageSize)+1;
+           }else{
+               totalPage=parseInt(num/pageSize);
+           }
+        var currentPage = pno;//当前页数
+        var startRow = (currentPage - 1) * pageSize+1;//开始显示的行
+           var endRow = currentPage * pageSize;//结束显示的行
+           endRow = (endRow > num)? num : endRow;
+           console.log(endRow);
+           //遍历显示数据实现分页
+        for(var i=1;i<(num+1);i++){
+            var irow = itable.rows[i-1];
+            if(i>=startRow && i<=endRow){
+                irow.style.display = "table-row";
+            }else{
+                irow.style.display = "none";
+            }
+        }
+        var pageEnd = document.getElementById("pageEnd");
+        var tempStr = "共"+num+"条记录 | 分"+totalPage+"页 | 当前第"+currentPage+"页 | ";
+        if(currentPage>1){
+            tempStr += "<a href=\"#\" onClick=\"goPage("+(1)+","+psize+")\">首页</a>";
+            tempStr += "<a href=\"#\" onClick=\"goPage("+(currentPage-1)+","+psize+")\"><上一页</a>"
+        }else{
+            tempStr += "首页";
+            tempStr += "<上一页 | ";
+        }
+
+        if(currentPage<totalPage){
+            tempStr += "<a href=\"#\" onClick=\"goPage("+(currentPage+1)+","+psize+")\">下一页></a>";
+            tempStr += "<a href=\"#\" onClick=\"goPage("+(totalPage)+","+psize+")\">尾页</a>";
+        }else{
+            tempStr += "|下一页> | ";
+            tempStr += "尾页";
+    }
+    document.getElementById("barcon").innerHTML = tempStr;
+
+
+        var time=new Date();
+    time.setHours(0);
+    time.setMinutes({{ test_time }});
+    time.setSeconds(0);
+    var timeout;
+    var timeshow=document.getElementById("time");
+    function countdown(){
+        var hour=time.getHours();
+        var min=time.getMinutes();
+        var second=time.getSeconds();
+        if( hour=="0" && min=="0" && second=="0"){
+            timeshow.style.color="red";
+            clearInterval(timeout);
+        }
+        time.setSeconds(second-1);
+        hour<10?hour="0"+hour:hour;
+        min<10?min="0"+min:min;
+        second<10?second="0"+second:second;
+        timeshow.innerHTML=hour+":"+min+":"+second;
+    }
+    timeout= setInterval(countdown,1000);
+
+}
+</script>
+</html>

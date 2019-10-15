@@ -1,0 +1,96 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap-select.min.js' %}"></script>
+    <script src="{% static 'js/highcharts.js' %}"></script>
+    <link href="{% static 'css/bootstrap.min.css' %}?v=5.8" rel="stylesheet">
+    <link href="{% static 'css/bootstrap-select.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/custom.css' %}?v=1.1" rel="stylesheet">
+    <!--<script src="http://code.highcharts.com/highcharts.js"></script> !-->
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body id="main">
+<div class="container-fluid">
+    <hr>
+    <div class="row clearfix">
+        <div class="col-lg-2">
+            <div class="panel panel-primary ">
+                <div class="panel-heading">
+                    <h2 class="panel-title">
+                        选项
+                    </h2>
+                </div>
+                <div class="panel-body">
+                    <select id="user_select" class="selectpicker" multiple data-live-search="true"  title="请选择要查看的用户" data-selected-text-format="count > 3" data-actions-box="true" required>
+                        <option selected data-icon="glyphicon glyphicon-user" value="{{ user }}">{{ user }}</option>
+                        {% for users in user_list %}
+                            <option data-icon="glyphicon glyphicon-user" value="{{ users.username }}">{{ users.username }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="radio" name="time" id="1" value="30" >
+                    <label for="1">30天</label><br>
+                    <input type="radio" name="time" id="2" value="60">
+                    <label for="2">60天</label><br>
+                    <input type="radio" name="time" id="3" value="90">
+                    <label for="3">90天</label><br>
+                    <input type="radio" name="time" id="4" value="180">
+                    <label for="4">180天</label><br>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-10">
+            <div id="test_analysis"></div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    $("[name='time']").click(function () {
+        var time = $(this).val();
+        var users = $("#user_select").val();
+        //alert(users);
+
+        $.get('/analysisinfo/',{'time':time,'users':users},function (data) {
+            var series = data['serise'];
+            var plotOptions = {
+                line:{
+                    dataLabels:{
+                        enabled:true,
+                    }
+                }
+            };
+             /*var xAxis = {
+                 categories:data["serise"]["data"],
+                  title: {
+                     text: 'Date'
+                  }
+               };*/
+            var yAxis = {
+              title: {
+                 text: '成绩(按正确率计算）'
+              },
+              plotLines: [{
+                 max: 100,
+                 width: 1,
+                 color: '#3174ff'
+              }]
+           };
+
+            var json = {};
+            json.title = data['title'];
+            json.chart = data['chart'];
+            json.xAxis = data['xAxis'];
+            json.plotOptions = plotOptions;
+            json.yAxis = yAxis;
+            json.series = series;
+            $('#test_analysis').highcharts(json);
+        })
+
+    })
+</script>
+</html>

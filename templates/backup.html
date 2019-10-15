@@ -1,0 +1,36 @@
+<html>
+<head>
+</head>
+<body>
+<!-- Nav tabs -->
+<ul class="nav nav-tabs" role="tablist" id="maintab">
+  <li class="active"><a href="#tab1"  οnclick='showPage("tab1","tab1.php")'>tab1</a></li>
+  <li><a href="#tab2" οnclick='showPage("tab2","tab2.php")'>tab2</a></li>
+  <li><a href="#tab3" οnclick='showPage("tab3","tab3.php")'>tab3</a></li>
+  <li><a href="#tab4" οnclick='showPage("tab4","tab4.php")'>tab4</a></li>
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content">
+  <div class="tab-pane active" id="tab1"></div>
+  <div class="tab-pane" id="tab2"></div>
+  <div class="tab-pane" id="tab3"></div>
+  <div class="tab-pane" id="tab4"></div>
+</div>
+
+
+<script language="javascript">
+  var loadimg="./img/load2.gif"; // 加载时的loading图片
+
+  function showPage(tabId, url){
+    $('#maintab a[href="#'+tabId+'"]').tab('show'); // 显示点击的tab页面
+    if($('#'+tabId).html().length<20){ // 当tab页面内容小于20个字节时ajax加载新页面
+      $('#'+tabId).html('<br>'+loadimg+' 页面加载中，请稍后...'); // 设置页面加载时的loading图片
+      $('#'+tabId).load(url); // ajax加载页面
+    }
+  }
+
+</script>
+
+</body>
+</html>

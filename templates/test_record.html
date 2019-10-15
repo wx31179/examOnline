@@ -1,0 +1,57 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/dataTables.bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}?v=5.8">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=1.4">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body id="main">
+<div class="container-fluid">
+    <h3 align="center"><b>测试记录</b></h3>
+    <hr>
+    <div class="row clearfix">
+        <div class="col-lg-12">
+            <table id="test_record" class="table table-bordered table-condensed table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th style="text-align: center;" >项目</th>
+                        <th style="text-align: center;" >测试时长</th>
+                        <th style="text-align: center;" >测试类型</th>
+                        <th style="text-align: center;" >创建时间</th>
+                        <th style="text-align: center;" >提交人</th>
+                        <th style="text-align: center;" >正确率(%)</th>
+                        <th style="text-align: center;" >操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for test in test_info  %}
+                    <tr>
+                        <td align="center">{{ test.P_Type }}</td>
+                        <td align="center">{{ test.test_time}}</td>
+                        <td align="center" >{{ test.test_range}}</td>
+                        <td align="center">{{ test.create_time|date:'Y-m-d H:i:s'}}</td>
+                        <td align="center">{{ test.submitter}}</td>
+                        <td align="center">{{ test.correct_rate}}</td>
+                        <td align="center"><a href={% url 'check_test' %}?id={{ test.test_id }}>查看</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+</body>
+<script>
+    $(document).ready(function() {
+        $('#test_record').DataTable();
+    });
+</script>
+</html>
