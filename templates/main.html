@@ -193,11 +193,31 @@
         }
 
     }
-    function deltab(id,name) {
-       document.getElementById(name).remove();
-       document.getElementById(id).remove();
-       document.getElementById("home_page").click()
 
+    function isIE(){
+    　　if(!!window.ActiveXObject || "ActiveXObject" in window){
+    　　　　return true;
+    　　}else{
+    　　　　return false;
+    　　}
+    }
+    function isIE11(){
+    　　if((/Trident\/7\./).test(navigator.userAgent)){
+    　　　　return true;
+    　　}else{
+    　　　　return false;
+    　　}
+    }
+    function deltab(id,name) {
+        if(isIE()||isIE11()){
+            document.getElementById(name).removeNode(true);
+           document.getElementById(id).removeNode(true);
+           document.getElementById("home_page").click()
+        }  else{
+           document.getElementById(name).remove();
+           document.getElementById(id).remove();
+           document.getElementById("home_page").click()
+        }
     }
 </script>
 </html>
