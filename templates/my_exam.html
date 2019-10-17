@@ -412,9 +412,19 @@ function deltab(id,name) {
        document.getElementById(id).removeNode(true);
        document.getElementById("home_page").click()
     }  else{
-       document.getElementById(name).remove();
-       document.getElementById(id).remove();
-       document.getElementById("home_page").click()
+        var childrenNum = document.getElementById("tab_tittle_doc").getElementsByTagName("a").length;
+        var childrenindex = document.getElementById("tab_tittle_doc").getElementsByTagName("a").item(childrenNum-2).getAttribute("id");
+        //alert(childrenindex);
+        if(childrenNum === 2){
+            document.getElementById(name).remove();
+            document.getElementById(id).remove();
+            document.getElementById("home_page").click()
+        }else {
+            document.getElementById(name).remove();
+            document.getElementById(id).remove();
+            document.getElementById(childrenindex).click()
+        }
+
     }
 }
 function create_exam(url,tittle) {

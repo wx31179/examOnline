@@ -7,7 +7,6 @@
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <link href="{% static 'css/bootstrap.min.css' %}?v=1" rel="stylesheet">
     <link href="{% static 'css/custom.css' %}?v=1.0" rel="stylesheet">
-    <script src="{% static 'js/custom-check-exam.js' %}"></script>
     <meta charset="UTF-8">
     <title>userlogin</title>
 </head>
@@ -80,9 +79,29 @@
 </div>
 </body>
 <script>
-    var message = {{ message|safe }};
-    if(message !== ""){
-        document.getElementById("message").innerHTML = '<div class="alert alert-danger">'+message["message"]+'</div>'
+$(document).ready(function() {
+    if(isIE()||isIE11()){
+        alert("使用非IE可以获得最佳体验！")
     }
+
+});
+    function isIE(){
+    　　if(!!window.ActiveXObject || "ActiveXObject" in window){
+    　　　　return true;
+    　　}else{
+    　　　　return false;
+    　　}
+    }
+    function isIE11(){
+    　if((/Trident\/7\./).test(navigator.userAgent)){
+    　　　　return true;
+    　　}else{
+    　　　　return false;
+    　　}
+    }
+    var message = {{ message|safe }};
+    if(message["message"] !== "start"){
+        document.getElementById("message").innerHTML = '<div class="alert alert-danger">'+message["message"]+'</div>'
+   }
 </script>
 </html>

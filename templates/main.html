@@ -175,7 +175,7 @@
                                                                                 '</iframe>\n'+
                                                                             '</div>\n' +
                                                                             '    </div>';
-            var node_tittle= '<li id='+'"'+name+'"'+'><a id='+'"'+url+'"'+ ' data-toggle="tab" href="'+'#'+id+'"'+'>'+name+'\xa0\xa0'+'<button class="close" aria-hidden="true" onclick="deltab('+'\''+id+'\''+','+'\''+name+'\''+')"><span class="glyphicon glyphicon-remove-circle"> </span></button>'+'</a></li>';
+            var node_tittle= '<li id='+'"'+name+'"'+'><a id='+'"'+url+'"'+ ' data-toggle="tab" href="'+'#'+id+'"'+'>'+name+'\xa0\xa0'+'<button class="close" aria-hidden="true" onclick="deltab('+'\''+id+'\''+','+'\''+name+'\''+')">x</button>'+'</a></li>';
             tittle.append(node_tittle);
             content.append(node_content);
 
@@ -214,9 +214,19 @@
            document.getElementById(id).removeNode(true);
            document.getElementById("home_page").click()
         }  else{
-           document.getElementById(name).remove();
-           document.getElementById(id).remove();
-           document.getElementById("home_page").click()
+            var childrenNum = document.getElementById("tab_tittle").getElementsByTagName("a").length;
+            var childrenindex = document.getElementById("tab_tittle").getElementsByTagName("a").item(childrenNum-2).getAttribute("id");
+            //alert(childrenindex);
+            if(childrenNum === 2){
+                document.getElementById(name).remove();
+                document.getElementById(id).remove();
+                document.getElementById("home_page").click()
+            }else {
+                document.getElementById(name).remove();
+                document.getElementById(id).remove();
+                document.getElementById(childrenindex).click()
+            }
+
         }
     }
 </script>
