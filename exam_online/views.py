@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 #from django.contrib.auth.decorators import login_required
 #from django.contrib.auth import authenticate, login, logout
 from .models import loginuser,type,exam,exam_answers,test_content,test_answer,doc_info,setting
-from django.contrib import messages
+#from django.contrib import messages
 from django.shortcuts import HttpResponseRedirect, HttpResponse,redirect,render
 from django.http import JsonResponse,StreamingHttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -157,7 +157,8 @@ def index(request):
                     Message = {"message": "用户名错误，请重新输入。"}
                     return render(request, '../templates/login.html', {"message": json.dumps(Message)})
         else:
-            return render(request, '../templates/login.html')
+            Message = {"message": "start"}
+            return render(request, '../templates/login.html', {"message": json.dumps(Message)})
 
 def backup_setting(request):
     return render(request, '../templates/backup_setting.html')
@@ -649,7 +650,7 @@ def start_test(request):
         total_test = test_answer.objects.values_list("is_right").filter(test_id=test_id).exclude(T_type="W")
         total_right_answer = []
         for true_answer in total_test:
-            print(true_answer)
+            #print(true_answer)
             if "%s"%true_answer == "True":
                 total_right_answer.append("%s"%true_answer)
         test_content.objects.filter(test_id=test_id).update(correct_rate=
@@ -671,13 +672,16 @@ def start_test(request):
         exam_infos_W = []
         answers = []
         exam_ids = exam.objects.all().values("exam_id", "content", "T_type")
+        conut_R = 1
+        count_M = 1
+        count_W = 1
         for i in exam_ids:
             exam_info = {}
             exam_info["T_type"] = i["T_type"]
             if i["T_type"] == "R":
                 exam_id = i["exam_id"]
                 test_answer.objects.create(test_id=test_id, exam_id=exam_id, T_type=i["T_type"])
-                exam_info["content"] = i["content"]
+                exam_info["content"] = "<p>%s.</p>%s"%(conut_R,i["content"])
                 exam_info["exam_id"] = exam_id
                 answer = exam_answers.objects.filter(exam_id=exam_id).values("answers", "answers_values")
                 for i in answer:
@@ -685,10 +689,11 @@ def start_test(request):
                     exam_info["answers"] = answers
                 exam_infos_R.append(exam_info)
                 answers = []
+                conut_R += 1
             elif i["T_type"] == "M":
                 exam_id = i["exam_id"]
                 test_answer.objects.create(test_id=test_id, exam_id=exam_id, T_type=i["T_type"])
-                exam_info["content"] = i["content"]
+                exam_info["content"] = "<p>%s.</p>%s"%(count_M,i["content"])
                 exam_info["exam_id"] = exam_id
                 answer = exam_answers.objects.filter(exam_id=exam_id).values("answers", "answers_values")
                 for i in answer:
@@ -696,10 +701,11 @@ def start_test(request):
                     exam_info["answers"] = answers
                 exam_infos_M.append(exam_info)
                 answers = []
+                count_M += 1
             else:
                 exam_id = i["exam_id"]
                 test_answer.objects.create(test_id=test_id, exam_id=exam_id, T_type=i["T_type"])
-                exam_info["content"] = i["content"]
+                exam_info["content"] = "<p>%s.</p>%s"%(count_W,i["content"])
                 exam_info["exam_id"] = exam_id
                 answer = exam_answers.objects.filter(exam_id=exam_id).values("answers", "answers_values")
                 for i in answer:
@@ -707,6 +713,7 @@ def start_test(request):
                     exam_info["answers"] = answers
                 exam_infos_W.append(exam_info)
                 answers = []
+                count_W += 1
         return render(request, "../templates/start_exam.html", {"test_id": test_id,
                                                                 "exam_info_R": exam_infos_R,
                                                                 "exam_info_M": exam_infos_M,

@@ -145,9 +145,9 @@ input:checked + span{
             tempStr += "尾页";
     }
     document.getElementById("barcon").innerHTML = tempStr;
+}
 
-
-        var time=new Date();
+ var time=new Date();
     time.setHours(0);
     time.setMinutes({{ test_time }});
     time.setSeconds(0);
@@ -168,7 +168,5 @@ input:checked + span{
         timeshow.innerHTML=hour+":"+min+":"+second;
     }
     timeout= setInterval(countdown,1000);
-
-}
 </script>
 </html>
