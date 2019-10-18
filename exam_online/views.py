@@ -411,7 +411,6 @@ def check_exam(request):
             exam_info = exam.objects.filter(exam_id=id).values("content","T_type")
             exam_all_answers = exam_answers.objects.filter(exam_id=id).values("answers","answers_values")
             exam_right_answers = exam_answers.objects.filter(exam_id=id).values("answers_values","answers")
-            #print(exam_right_answers)
             for answer in exam_all_answers:
                 if answer["answers_values"] == True:
                     all_answer.append(answer["answers"])
@@ -466,7 +465,6 @@ def check_exam(request):
             exam_info = exam.objects.filter(exam_id=id).values("content", "T_type")
             exam_all_answers = exam_answers.objects.filter(exam_id=id).values("answers", "answers_values")
             exam_right_answers = exam_answers.objects.filter(exam_id=id).values("answers_values", "answers")
-            # print(exam_right_answers)
             for answer in exam_all_answers:
                 if answer["answers_values"] == True:
                     all_answer.append(answer["answers"])
@@ -651,7 +649,6 @@ def start_test(request):
         total_test = test_answer.objects.values_list("is_right").filter(test_id=test_id).exclude(T_type="W")
         total_right_answer = []
         for true_answer in total_test:
-            #print(true_answer)
             if "%s"%true_answer == "True":
                 total_right_answer.append("%s"%true_answer)
         test_content.objects.filter(test_id=test_id).update(correct_rate=
