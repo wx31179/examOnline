@@ -10,7 +10,6 @@
     <link href="{% static 'css/bootstrap.min.css' %}?v=5.8" rel="stylesheet">
     <link href="{% static 'css/bootstrap-select.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/custom.css' %}?v=1.1" rel="stylesheet">
-    <!--<script src="http://code.highcharts.com/highcharts.js"></script> !-->
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
@@ -53,8 +52,6 @@
     $("[name='time']").click(function () {
         var time = $(this).val();
         var users = $("#user_select").val();
-        //alert(users);
-
         $.get('/analysisinfo/',{'time':time,'users':users},function (data) {
             var series = data['serise'];
             var plotOptions = {
@@ -64,12 +61,6 @@
                     }
                 }
             };
-             /*var xAxis = {
-                 categories:data["serise"]["data"],
-                  title: {
-                     text: 'Date'
-                  }
-               };*/
             var yAxis = {
               title: {
                  text: '成绩(按正确率计算）'

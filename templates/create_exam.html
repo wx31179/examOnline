@@ -9,7 +9,6 @@
     <script src="{% static 'js/hotkeys.js' %}"></script>
     <script src="{% static 'js/uploader.js' %}"></script>
     <script src="{% static 'js/simditor.js' %}?v=1.4"></script>
-    <!--<script src="{% static 'js/custom-my-exam.js' %}?v=0550."></script>!-->
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}?v=5.8">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=1.1">
     <link rel="stylesheet" href="{% static 'css/simditor.css' %}?v=1.2">
@@ -112,8 +111,6 @@
 </body>
 <script>
     $(document).ready(function() {
-
-        //$("td,th").addClass("text-center");
         (function () {
             $(function () {
                 var editor, toolbar;
@@ -138,7 +135,6 @@
                     }
                 });
             });
-
         }).call(this);
     });
 
@@ -208,7 +204,6 @@ function diff_M() {
                     alert("答案与选项不符合")
                 }
             }
-
         }
     }
 }

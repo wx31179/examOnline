@@ -9,7 +9,6 @@
     <script src="{% static 'js/hotkeys.js' %}"></script>
     <script src="{% static 'js/uploader.js' %}"></script>
     <script src="{% static 'js/simditor.js' %}?v=1.1"></script>
-    <!--<script src="{% static 'js/custom-check-exam.js' %}?v=3.9"></script>!-->
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}?v=5.8">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=1.1">
     <link rel="stylesheet" href="{% static 'css/simditor.css' %}?v=1.1">
@@ -127,7 +126,6 @@ img{
                   }
                 });
               });
-
             }).call(this);
 
         var all_answer_R_M = '<button class="btn btn-info" type="button" data-toggle="tooltip" title="新增" id="addSaltIpGrpBtn" onclick="addbutton_all(this)" ><span class="glyphicon glyphicon-plus"></span></button>';
@@ -184,7 +182,6 @@ img{
                right_answer_R_W +=
                        '<textarea name="{{ exam.exam_id }}_right_answer" id="{{ exam.exam_id }}_right_answer" class="form-control" required placeholder="简答题答案可选写"></textarea>';
                    document.getElementById("{{ exam.exam_id }}_right_answers").innerHTML = right_answer_R_W
-
            }
     });
 
@@ -224,10 +221,8 @@ $(document).on('click','#{{ exam.exam_id }}_delbutton_all',function(){
 					}
 				}
 			})
-
 		}
 	})
-
 });
 
 function addbutton_right(obj){
@@ -266,10 +261,8 @@ $(document).on('click','#{{ exam.exam_id }}_delbutton_right',function(){
 					}
 				}
 			})
-
 		}
 	});
-
 });
 
 function diff_exam(id,type) {
@@ -283,7 +276,6 @@ function diff_exam(id,type) {
         for (var h = 0; h < project.length; h++) {
             if (content[k].value === "" || project[h].value === "") {
                 alert("内容或项目不能为空")
-
             } else {
                 if (type !== "W") {
                     for (var j = 0; j < all_answer.length; j++) {
@@ -313,12 +305,9 @@ function diff_exam(id,type) {
                     } else {
                         return false
                     }
-
-
                 }
             }
         }
-
     }
 }
 

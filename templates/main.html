@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="{% static 'js/jquery.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
-    <!--<script src="{% static 'js/addTab.js' %}"></script>!-->
     <link href="{% static 'css/bootstrap.min.css' %}?v=5.8" rel="stylesheet">
     <link href="{% static 'css/custom.css' %}?v=1.3" rel="stylesheet">
     <meta charset="UTF-8">
@@ -19,127 +18,21 @@
                 <ul class="nav nav-pills nav-stacked" style="padding-bottom: 40px;padding-left: 5px">
                     <li class="active"><a href="javascript:void(0)">常用信息</a></li>
                     <li><a href="javascript:void(0)" onclick="addTab('public_office','/public_office/','公共办公')">公共办公</a></li>
-                    <!--<li><a target="myFrameName"  href={% url 'public_office' %}>公共办公</a></li>!-->
                     <li><a href="javascript:void(0)" onclick="addTab('check_doc','/check_doc/','知识库')">知识库</a></li>
-                    <!--<li><a target="myFrameName"  href={% url 'check_doc' %}>知识库</a></li>!-->
                 </ul>
                 <ul class="nav nav-pills nav-stacked" style="padding-bottom: 40px;padding-left: 5px">
                     <li class="active"><a href="javascript:void(0)">我的任务</a></li>
                     <li><a href="javascript:void(0)" onclick="addTab('exam_temp','/exam_temp/','在线测试')">在线测试</a></li>
-                    <!--<li><a target="myFrameName"  href={% url 'exam_temp' %}>在线测试</a></li>!-->
                     <li><a href="javascript:void(0)" onclick="addTab('test_record','/test_record/','测试记录')">测试记录</a></li>
-                    <!--<li><a target="myFrameName"  href={% url 'test_record' %}>测试记录</a></li>!-->
                     <li><a href="javascript:void(0)" onclick="addTab('test_analysis','/test_analysis/','成绩分析')">成绩分析</a></li>
-                    <!--<li><a target="myFrameName"  href={% url 'test_analysis' %}>成绩分析</a></li>!-->
                 </ul>
                 <ul class="nav nav-pills nav-stacked" style="padding-bottom: 40px;padding-left: 5px">
                     <li class="active"><a href="javascript:void(0)">个人管理</a></li>
                     <li><a href="javascript:void(0)" onclick="addTab('person_setting','/person_setting/','个人设置')">个人设置</a></li>
                     <li><a href="javascript:void(0)" onclick="addTab('person_meassage','/person_meassage/','我的消息')">我的消息</a></li>
-                    <!--<li><a target="myFrameName"  href={% url 'person_meassage' %}>我的消息</a></li>!-->
-                    <!--<li><a target="myFrameName"  href={% url 'my_exam' %}>我的题库</a></li>!-->
                     <li><a href="javascript:void(0)"  onclick="addTab('my_exam','/my_exam/','我的题库')">我的题库</a></li>
                 </ul>
-                <!--<div class="panel panel-info">
-                    <div class="panel-heading">
-                        <h2 class="panel-title textcenter" >
-                            常用信息
-                        </h2>
-                    </div>
-                    <div class="panel-body" style="margin: -12px">
-                        <div class="panel-group" id="accordion">
-                            <div class="panel panel-green">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">
-                                        <a target="myFrameName" class="textcenter" href={% url 'public_office' %}>公共办公</a>
-                                    </h3>
-                                </div>
-                            </div>
-                            <div class="panel panel-green">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">
-                                        <a target="myFrameName"  class="textcenter" href={% url 'check_doc' %}>知识库</a>
-                                    </h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel panel-green">
-                    <div class="panel-heading">
-                        <h2 class="panel-title textcenter" >
-                            我的任务
-                        </h2>
-                    </div>
-                    <div class="panel-body" style="margin: -12px">
-                        <div class="panel-group" id="accordion">
-                            <div class="panel panel-green">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">
-                                        <a target="myFrameName"  class="textcenter" href={% url 'exam_temp' %}>在线测试</a>
-                                    </h3>
-                                </div>
-                            </div>
-                            <div class="panel panel-green">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">
-                                        <a target="myFrameName"  class="textcenter" href={% url 'test_record' %}>测试记录</a>
-                                    </h3>
-                                </div>
-                            </div>
-                            <div class="panel panel-green">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">
-                                        <a target="myFrameName"  class="textcenter" href={% url 'test_analysis' %}>成绩分析</a>
-                                    </h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel panel-green">
-                    <div class="panel-heading">
-                        <h2 class="panel-title textcenter" >
-                            个人管理
-                        </h2>
-                    </div>
-                    <div class="panel-body" style="margin: -12px">
-                        <div class="panel-group" id="accordion">
-                            <div class="panel panel-green">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">
-                                        <a target="myFrameName"  class="textcenter" href={% url 'public_office' %}>个人设置</a>
-                                    </h3>
-                                </div>
-                            </div>
-                            <div class="panel panel-green">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">
-                                        <a target="myFrameName"  class="textcenter" href={% url 'public_office' %}>我的消息</a>
-                                    </h3>
-                                </div>
-                            </div>
-                            <div class="panel panel-green">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">
-                                        <a target="myFrameName"  class="textcenter" href="{% url 'my_exam' %}">我的题库</a>
-                                    </h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>!-->
             </div>
-            <!--<div class="col-lg-11 col-md-10 col-sm-9 col-xs-8">
-                <div class="panel panel-green">
-                    <div class="panel-body">
-                        <div class="embed-responsive embed-responsive-4by3">
-                            <iframe name="myFrameName" scrolling="auto" src={% url 'iframe_main' %}>
-                            </iframe>
-                        </div>
-                    </div>
-                </div>
-            </div>!-->
             <div class="col-lg-11 col-md-9 col-sm-9 col-xs-8">
 
                 <ul id="tab_tittle" class="nav nav-tabs">
@@ -178,20 +71,8 @@
             var node_tittle= '<li id='+'"'+name+'"'+'><a id='+'"'+url+'"'+ ' data-toggle="tab" href="'+'#'+id+'"'+'>'+name+'\xa0\xa0'+'<button class="close" aria-hidden="true" onclick="deltab('+'\''+id+'\''+','+'\''+name+'\''+')">x</button>'+'</a></li>';
             tittle.append(node_tittle);
             content.append(node_content);
-
-
-            /*document.getElementById("tab_tittle").innerHTML += '<li><a id='+'"'+tag+'"'+ ' data-toggle="tab" href="'+'#'+id+'"'+'>'+name+'</a></li>';
-            document.getElementById("tab_container").innerHTML += '<div id= "'+id+'"'+' class="tab-pane fade">\n' +
-                                                                            '<div class="embed-responsive embed-responsive-4by3">\n'+
-                                                                                '<iframe scrolling="auto" src='+'/'+id+'/'+ '>\n'+
-                                                                                '</iframe>\n'+
-                                                                            '</div>\n' +
-                                                                     '    </div>';*/
-
-            //$('#'+id).load(url);
             document.getElementById(url).click();
         }
-
     }
 
     function isIE(){

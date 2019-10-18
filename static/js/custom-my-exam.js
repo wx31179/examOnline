@@ -1,6 +1,4 @@
 $(document).ready(function() {
-
-    //$("td,th").addClass("text-center");
     (function() {
       $(function() {
         var editor,toolbar;
@@ -55,11 +53,7 @@ $(document).ready(function() {
       });
 
     }).call(this);
-
-
 });
-
-
 
 $(function() {
     var editor,toolbar;
@@ -68,7 +62,6 @@ $(function() {
     'fontScale', 'color', '|', 'ol', 'ul', 'blockquote',
     'code', 'table', '|', 'link', 'image', 'hr', '|',
     'indent', 'outdent', 'alignment'];
-
     editor = new Simditor({
     textarea: $('#M_editor'),
     placeholder: '这里输入题目内容...',
@@ -120,7 +113,6 @@ $(document).on('click','#delbutton_all_R',function(){
 					}
 				}
 			})
-
 		}
 	})
 
@@ -162,7 +154,6 @@ $(document).on('click','#delbutton_all_M',function(){
 					}
 				}
 			})
-
 		}
 	})
 
@@ -204,7 +195,6 @@ $(document).on('click','#delbutton_right',function(){
 					}
 				}
 			})
-
 		}
 	})
 

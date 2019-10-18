@@ -99,13 +99,10 @@
                     browseClass: 'btn btn-primary'
                 });
                 }
-
             } else if (chose === "False"){
                 document.getElementById("show_upload").innerHTML = "";
                 document.getElementById("show_upload").innerHTML ='<label class="control-label" for="testfile">上传文件</label>\n' +
                                                                 ' <input type="file" id="testfile" name="doc" value="False" multiple />';
-
-
                 $('#testfile').fileinput({
                     language: 'zh',
                     uploadUrl: '{% url 'upload_doc' %}',
@@ -122,10 +119,7 @@
                     browseClass: 'btn btn-primary'
                 });
             }
-
         }
     }
-
-
 </script>
 </html>

@@ -104,14 +104,6 @@
                                     '    </div>';
             child_tittle.append(node_tittle_child);
             child_content.append(node_content_child);
-            /*var b = document.getElementById("tab_container_child").innerHTML;
-            document.getElementById("tab_container_child").innerHTML = b + '    <div id="' + id + '"' + ' class="tab-pane fade">\n' +
-                '<div class="embed-responsive embed-responsive-4by3">\n' +
-                '<iframe scrolling="auto" src="'+url+'">\n' +
-                '</iframe>\n' +
-                '</div>\n' +
-                '    </div>';*/
-
             document.getElementById(name).click()
         }
     }
@@ -121,10 +113,7 @@
                 location.reload(true)
             } else {
                 add_doc_tab(id,url,tag,name)
-
             }
-
-
         })
     }
     function isIE(){
@@ -160,7 +149,6 @@
                 document.getElementById(id).remove();
                 document.getElementById(childrenclick).click()
             }
-
         }
     }
 
@@ -170,7 +158,6 @@
                 alert(data["message"]);
                 location.reload(true)
             })
-
         }
     }
 </script>

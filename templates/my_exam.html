@@ -95,286 +95,16 @@ img{
                     </h4>
                 </div>
                 <div class="modal-body" id="content" style="width: 850px; margin: 0px auto;">
-                    <!--<div class="form-group">
-                        <label for="R_editor">题目内容</label>
-                        <textarea id="R_editor" name="R_content" class="form-control"  required></textarea>
-                    </div>
-                    <div class="row clearfix">
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label for="R_project">所属项目</label>
-                                    <div class="input-group">
-                                        <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
-                                            <select class="form-control" id="R_project" name="R_project" required>
-                                                <option value=""></option>
-                                                {%  for type in typelist %}
-                                                    <option value="{{ type.Total_Type_values}}">{{ type.Total_Type_values }}</option>
-                                                {% endfor %}
-                                            </select>
-                                    </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row clearfix">
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label for="R_level">题目等级</label>
-                                <div class="input-group">
-                                    <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
-                                    <select class="form-control" id="R_level" name="R_level" required>
-                                        {% for level in levellist %}
-                                        <option value="{{ level.Total_Type_values }}">{{ level.Total_Type_values }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="R_all_answers" style="padding: 10px">题目选项</label>
-                        <div class="input-group" id="saltIpGroup">
-                            <button class="btn btn-info" type="button" data-toggle="tooltip" title="新增" id="addSaltIpGrpBtn" onclick="addbutton_all_R(this)" ><span class="glyphicon glyphicon-plus"></span></button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="R_right_answer" style="padding: 10px">题目正确选项</label>
-                        <textarea name="R_right_answer" id="R_right_answer" class="form-control" required placeholder="单选题只能有一个正确选项"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <input name="exam_type" value="R" style="display: none">
-                    </div>!
-                    <iframe scrolling="auto" src={% url 'create_exam' %}?Type=R style="width: 800px; margin: 0px; height: 850px" frameborder="0">
 
-                    </iframe>-->
                 </div>
             </div>
         </div>
     </div>
-
-    <!--<div class="modal fade" id="myModal_2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="width: 850px">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="myModalLabel">
-                            创建多选题
-                    </h4>
-                </div>
-                <form role="form" id="M_form" method="POST" action="">
-                    {% csrf_token %}
-                    <div class="modal-body" style="width: 850px; margin: 0px auto;">
-                        <div class="form-group">
-                            <label for="M_editor">题目内容</label>
-                            <textarea id="M_editor" name="M_content" class="form-control" required></textarea>
-                        </div>
-
-                        <div class="row clearfix">
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                    <label for="M_project">所属项目</label>
-                                        <div class="input-group">
-                                            <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
-                                                <select class="form-control" id="M_project" name="M_project" required>
-                                                    <option value=""></option>
-                                                    {%  for type in typelist %}
-                                                        <option value="{{ type.Total_Type_values}}">{{ type.Total_Type_values }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                        </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row clearfix">
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                    <label for="M_level">题目等级</label>
-                                    <div class="input-group">
-                                        <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
-                                        <select class="form-control" id="M_level" name="M_level" required>
-                                            {% for level in levellist %}
-                                            <option value="{{ level.Total_Type_values }}">{{ level.Total_Type_values }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="M_all_answer" style="padding: 10px">题目选项</label>
-                            <div class="input-group" id="saltIpGroup">
-                                <button class="btn btn-info" type="button" data-toggle="tooltip" title="新增" id="addSaltIpGrpBtn" onclick="addbutton_all_M(this)" ><span class="glyphicon glyphicon-plus"></span></button>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="M_right_answer" style="padding: 10px">题目正确选项</label>
-                            <div class="input-group" id="saltIpGroup">
-                                <button class="btn btn-info" type="button" data-toggle="tooltip" title="新增" id="addSaltIpGrpBtn" onclick="addbutton_right(this)" ><span class="glyphicon glyphicon-plus"></span></button>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                                <input name="exam_type" value="M" style="display: none">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="diff_M(this)">创建</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="myModal_3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="width: 850px">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="myModalLabel">
-                                创建问答题
-                    </h4>
-                </div>
-                <form role="form" id="W_form" method="POST" action="">
-                    {% csrf_token %}
-                    <div class="modal-body" style="width: 850px; margin: 0px auto;">
-                        <div class="form-group">
-                            <label for="W_editor">题目内容</label>
-                            <textarea id="W_editor" name="W_content" class="form-control" required></textarea>
-                        </div>
-                        <div class="row clearfix">
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                    <label for="W_project">所属项目</label>
-                                        <div class="input-group">
-                                            <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
-                                                <select class="form-control" id="W_project" name="W_project" required>
-                                                    <option value=""></option>
-                                                    {%  for type in typelist %}
-                                                        <option value="{{ type.Total_Type_values}}">{{ type.Total_Type_values }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                        </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row clearfix">
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                    <label for="W_level">题目等级</label>
-                                    <div class="input-group">
-                                        <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
-                                        <select class="form-control" id="W_level" name="W_level" required>
-                                            {% for level in levellist %}
-                                            <option value="{{ level.Total_Type_values }}">{{ level.Total_Type_values }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="W_right_answer" style="padding: 10px">题目答案</label>
-                            <textarea id="W_right_answer" name="W_right_answer" class="form-control" placeholder="简答题可以不用填写答案"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary" id="input-button">创建</button>
-                    </div>
-                    <div class="form-group">
-                        <input name="exam_type" value="W" style="display: none">
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>!-->
-
 </body>
 <script>
 $(document).ready(function() {
     $("[data-toggle='popover']").popover();
     $('#my_exam_1').DataTable();
-
-    /*$(function () {
-        $(function () {
-            var editor, toolbar;
-            Simditor.locale = 'zh-CN';
-            toolbar = ['title', 'bold', 'italic', 'underline', 'strikethrough',
-                'fontScale', 'color', '|', 'ol', 'ul', 'blockquote',
-                'code', 'table', '|', 'link', 'image', 'hr', '|',
-                'indent', 'outdent', 'alignment'];
-
-            editor = new Simditor({
-                textarea: $('#M_editor'),
-                placeholder: '这里输入题目内容...',
-                toolbar: toolbar,
-                pasteImage: true,
-                upload: {
-                    url: '/upload/',
-                    params: null,
-                    fileKey: "upload_file",
-                    connectionCount: 3,
-                    leaveConfirm: "正在上传,确定要取消上传文件吗?"
-                }
-            });
-        });
-    }).call(this);
-
-
-    $(function () {
-        $(function() {
-        var editor,toolbar;
-        Simditor.locale = 'zh-CN';
-        toolbar = ['title', 'bold', 'italic', 'underline', 'strikethrough',
-            'fontScale', 'color', '|', 'ol', 'ul', 'blockquote', 'code',
-            'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent',
-            'alignment'];
-
-        editor = new Simditor({
-              textarea: $('#R_editor'),
-              placeholder: '这里输入题目内容...',
-              toolbar: toolbar,
-              pasteImage: true,
-              defaultImage: '/simditor/images/image.png',
-              upload: {
-                url: '/upload/',
-                params: null,
-                fileKey: "upload_file",
-                connectionCount: 3,
-                leaveConfirm: "正在上传,确定要取消上传文件吗?"
-              }
-            });
-        });
-    }).call(this);
-
-
-
-
-    $(function () {
-        $(function() {
-        var editor,toolbar;
-        Simditor.locale = 'zh-CN';
-        toolbar = ['title', 'bold', 'italic', 'underline',
-            'strikethrough', 'fontScale', 'color', '|',
-            'ol', 'ul', 'blockquote', 'code', 'table',
-            '|', 'link', 'image', 'hr', '|', 'indent',
-            'outdent', 'alignment'];
-
-        editor = new Simditor({
-              textarea: $('#W_editor'),
-              placeholder: '这里输入题目内容...',
-              toolbar: toolbar,
-              pasteImage: true,
-              defaultImage: '/simditor/images/image.png',
-              upload: {
-                url: '/upload/',
-                params: null,
-                fileKey: "upload_file",
-                connectionCount: 3,
-                leaveConfirm: "正在上传,确定要取消上传文件吗?"
-              }
-            });
-
-        });
-    }).call(this);*/
-
 });
 function check_tab(url,id,exam_id,action) {
     var tab_exist = document.getElementById(id);
@@ -415,9 +145,7 @@ function deltab(id,name) {
         var childrenNode = document.getElementById("tab_tittle_doc").getAttribute("a");
         var childrenNum = document.getElementById("tab_tittle_doc").getElementsByTagName("a").length;
         var childrenIndex = $("#"+name).index(childrenNode);
-        alert(childrenIndex);
         var childrenclick = document.getElementById("tab_tittle_doc").getElementsByTagName("a").item(childrenIndex-1).getAttribute("id");
-        //alert(childrenindex);
         if(childrenNum === 2){
             document.getElementById(name).remove();
             document.getElementById(id).remove();
@@ -427,13 +155,11 @@ function deltab(id,name) {
             document.getElementById(id).remove();
             document.getElementById(childrenclick).click()
         }
-
     }
 }
 function create_exam(url,tittle) {
     document.getElementById("myModalLabel").innerHTML = tittle;
     $("#content").load(url)
-
 }
 
     function delete_exam(id) {
@@ -448,9 +174,6 @@ function create_exam(url,tittle) {
        }else{
            return false
        }
-
-
-
     }
 </script>
 </html>
