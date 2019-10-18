@@ -143,7 +143,7 @@
             <div class="col-lg-11 col-md-9 col-sm-9 col-xs-8">
 
                 <ul id="tab_tittle" class="nav nav-tabs">
-                    <li class="active"><a id="home_page"  data-toggle="tab" href="#home">首页</a></li>
+                    <li class="active"><a id="home_page" data-toggle="tab" href="#home">首页</a></li>
                 </ul>
                 <div id="tab_container" class="tab-content">
                     <div id="home" class="tab-pane fade in active">
@@ -214,9 +214,10 @@
            document.getElementById(id).removeNode(true);
            document.getElementById("home_page").click()
         }  else{
+            var childrenNode = document.getElementById("tab_tittle").getAttribute("a");
             var childrenNum = document.getElementById("tab_tittle").getElementsByTagName("a").length;
-            var childrenindex = document.getElementById("tab_tittle").getElementsByTagName("a").item(childrenNum-2).getAttribute("id");
-            //alert(childrenindex);
+            var childrenIndex = $("#"+name).index(childrenNode);
+            var childrenclick = document.getElementById("tab_tittle").getElementsByTagName("a").item(childrenIndex-1).getAttribute("id");
             if(childrenNum === 2){
                 document.getElementById(name).remove();
                 document.getElementById(id).remove();
@@ -224,9 +225,8 @@
             }else {
                 document.getElementById(name).remove();
                 document.getElementById(id).remove();
-                document.getElementById(childrenindex).click()
+                document.getElementById(childrenclick).click()
             }
-
         }
     }
 </script>

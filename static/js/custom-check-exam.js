@@ -1,7 +1,7 @@
 var requesta;
 var requestb;
 $(document).ready(function() {
-    (function() {
+    /*(function() {
       $(function() {
         var editor,toolbar;
         Simditor.locale = 'zh-CN';
@@ -26,7 +26,7 @@ $(document).ready(function() {
         });
       });
 
-    }).call(this);
+    }).call(this);*/
 
 });
 function addbutton_all(obj){

@@ -412,8 +412,11 @@ function deltab(id,name) {
        document.getElementById(id).removeNode(true);
        document.getElementById("home_page").click()
     }  else{
+        var childrenNode = document.getElementById("tab_tittle_doc").getAttribute("a");
         var childrenNum = document.getElementById("tab_tittle_doc").getElementsByTagName("a").length;
-        var childrenindex = document.getElementById("tab_tittle_doc").getElementsByTagName("a").item(childrenNum-2).getAttribute("id");
+        var childrenIndex = $("#"+name).index(childrenNode);
+        alert(childrenIndex);
+        var childrenclick = document.getElementById("tab_tittle_doc").getElementsByTagName("a").item(childrenIndex-1).getAttribute("id");
         //alert(childrenindex);
         if(childrenNum === 2){
             document.getElementById(name).remove();
@@ -422,7 +425,7 @@ function deltab(id,name) {
         }else {
             document.getElementById(name).remove();
             document.getElementById(id).remove();
-            document.getElementById(childrenindex).click()
+            document.getElementById(childrenclick).click()
         }
 
     }

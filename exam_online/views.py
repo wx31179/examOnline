@@ -328,7 +328,7 @@ def edit_exam(request):
         answers = exam_answers.objects.filter(exam_id=id)
         for i in answers:
             all_answer[i.answers] = i.answers_values
-        typeinfo = {"type":types}
+        typeinfo = {"type":{id:types}}
         typeinfo = json.dumps(typeinfo)
         all_answer= json.dumps(all_answer)
         typelist = type.objects.values("Total_Type_values").filter(Total_Type="P_Type")
@@ -345,11 +345,11 @@ def edit_exam(request):
         exam_id = request.POST.get("id")
         exam_type = request.POST.get("type")
         if exam_type == "R":
-            project = request.POST.get("project")
-            content = request.POST.get("content")
-            level = request.POST.get("level")
-            all_answer = request.POST.getlist("all_answer")
-            right_answer = request.POST.get("right_answer")
+            project = request.POST.get("%s_project"%exam_id)
+            content = request.POST.get("%s_content"%exam_id)
+            level = request.POST.get("%s_level"%exam_id)
+            all_answer = request.POST.getlist("%s_all_answer"%exam_id)
+            right_answer = request.POST.get("%s_right_answer"%exam_id)
             exam_info = exam.objects.get(exam_id=exam_id)
             exam_info.P_Type = project
             exam_info.T_Level = level
@@ -361,11 +361,11 @@ def edit_exam(request):
             exam_answers.objects.filter(answers=right_answer).update(answers_values=True)
 
         elif exam_type == "M":
-            project = request.POST.get("project")
-            content = request.POST.get("content")
-            level = request.POST.get("level")
-            all_answer = request.POST.getlist("all_answer")
-            right_answer = request.POST.getlist("right_answer")
+            project = request.POST.get("%s_project"%exam_id)
+            content = request.POST.get("%s_content"%exam_id)
+            level = request.POST.get("%s_level"%exam_id)
+            all_answer = request.POST.getlist("%s_all_answer"%exam_id)
+            right_answer = request.POST.getlist("%s_right_answer"%exam_id)
             exam_info = exam.objects.get(exam_id=exam_id)
             exam_info.P_Type = project
             exam_info.T_Level = level
@@ -375,12 +375,13 @@ def edit_exam(request):
             for i in all_answer:
                 exam_answers.objects.create(exam_id=exam_id, answers=i, answers_values=False)
             for j in right_answer:
+                print(j)
                 exam_answers.objects.filter(answers=j).update(answers_values=True)
         elif exam_type == "W":
-            project = request.POST.get("project")
-            content = request.POST.get("content")
-            level = request.POST.get("level")
-            right_answer = request.POST.get("right_answer")
+            project = request.POST.get("%s_project"%exam_id)
+            content = request.POST.get("%s_content"%exam_id)
+            level = request.POST.get("%s_level"%exam_id)
+            right_answer = request.POST.get("%s_right_answer"%exam_id)
             exam_info = exam.objects.get(exam_id=exam_id)
             exam_info.P_Type = project
             exam_info.T_Level = level

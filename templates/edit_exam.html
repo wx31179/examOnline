@@ -9,7 +9,7 @@
     <script src="{% static 'js/hotkeys.js' %}"></script>
     <script src="{% static 'js/uploader.js' %}"></script>
     <script src="{% static 'js/simditor.js' %}?v=1.1"></script>
-    <script src="{% static 'js/custom-check-exam.js' %}?v=3.9"></script>
+    <!--<script src="{% static 'js/custom-check-exam.js' %}?v=3.9"></script>!-->
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}?v=5.8">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=1.1">
     <link rel="stylesheet" href="{% static 'css/simditor.css' %}?v=1.1">
@@ -34,23 +34,23 @@ img{
             </div>
             <div class="col-lg-8">
                 <hr>
-                <form role="form" id="form" method="POST" action="{% url 'edit_exam' %}">
+                <form role="form" id="{{ exam.exam_id }}_form" method="POST" action="{% url 'edit_exam' %}">
                     {% csrf_token %}
                     <div class="row clearfix">
                         <div class="col-sm-12">
                             <div class="form-group">
-                                <label for="editor">题目内容</label>
-                                <textarea id="editor" name="content" class="form-control" required>{{ exam.content }}</textarea>
+                                <label for="{{ exam.exam_id }}_editor">题目内容</label>
+                                <textarea id="{{ exam.exam_id }}_editor" name="{{ exam.exam_id }}_content" class="form-control" required>{{ exam.content }}</textarea>
                             </div>
                         </div>
                     </div>
                     <div class="row clearfix">
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <label for="project" style="padding: 10px">所属项目</label>
+                                <label for="{{ exam.exam_id }}_project" style="padding: 10px">所属项目</label>
                                     <div class="input-group">
                                         <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
-                                            <select class="form-control" id="project" name="project" required>
+                                            <select class="form-control" id="{{ exam.exam_id }}_project" name="{{ exam.exam_id }}_project" required>
                                                 <option value=""></option>
                                                 {%  for type in p_list %}
                                                     <option value="{{ type.Total_Type_values}}">{{ type.Total_Type_values }}</option>
@@ -63,10 +63,10 @@ img{
                     <div class="row clearfix">
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <label for="level" style="padding: 10px">题目等级</label>
+                                <label for="{{ exam.exam_id }}_level" style="padding: 10px">题目等级</label>
                                     <div class="input-group">
                                         <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
-                                            <select class="form-control" id="level" name="level" required>
+                                            <select class="form-control" id="{{ exam.exam_id }}_level" name="{{ exam.exam_id }}_level" required>
                                                 <option value="{{ exam.T_Level }}">{{ exam.T_Level }}</option>
                                                 {%  for level in levellist %}
                                                     <option value="{{ level.Total_Type_values}}">{{ level.Total_Type_values }}</option>
@@ -77,19 +77,19 @@ img{
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="all_answers" style="padding: 10px">题目选项</label>
-                        <div class="input-group" id="all_answers">
+                        <label for="{{ exam.exam_id }}_all_answers" style="padding: 10px">题目选项</label>
+                        <div class="input-group" id="{{ exam.exam_id }}_all_answers">
 
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="right_answers" style="padding: 10px">题目正确选项</label>
-                        <div class="input-group" id="right_answers">
+                        <label for="{{ exam.exam_id }}_right_answers" style="padding: 10px">题目正确选项</label>
+                        <div class="input-group" id="{{ exam.exam_id }}_right_answers">
 
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="diff_exam(this)">修改</button>
+                        <button type="button" class="btn btn-primary" onclick="diff_exam('{{ exam.exam_id }}','{{ types }}')">修改</button>
                     </div>
                     <input name="id" value="{{ exam.exam_id }}" hidden>
                     <input name="type" value="{{ types }}" hidden>
@@ -100,145 +100,227 @@ img{
 
 </body>
 <script>
+    var all_answers = {{ all_answer|safe }};
+    var type = {{ type|safe }};
     $(document).ready(function () {
-        var all_answers = {{ all_answer|safe }};
-        var type = {{ type|safe }};
+        (function() {
+              $(function() {
+                var editor,toolbar;
+                Simditor.locale = 'zh-CN';
+                toolbar = ['title', 'bold', 'italic', 'underline', 'strikethrough',
+                    'fontScale', 'color', '|', 'ol', 'ul', 'blockquote', 'code',
+                    'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent',
+                    'alignment'];
+
+                editor = new Simditor({
+                  textarea: $('#{{ exam.exam_id }}_editor'),
+                  placeholder: '这里输入题目内容...',
+                  toolbar: toolbar,
+                  pasteImage: true,
+                  defaultImage: '/simditor/images/image.png',
+                  upload: {
+                    url: '/upload/',
+                    params: null,
+                    fileKey: "upload_file",
+                    connectionCount: 3,
+                    leaveConfirm: "正在上传,确定要取消上传文件吗?"
+                  }
+                });
+              });
+
+            }).call(this);
+
         var all_answer_R_M = '<button class="btn btn-info" type="button" data-toggle="tooltip" title="新增" id="addSaltIpGrpBtn" onclick="addbutton_all(this)" ><span class="glyphicon glyphicon-plus"></span></button>';
         var right_answer_R_W = '';
         var right_answer_M =
            '                       <div class="input-group" id="saltIpGroup">\n' +
            '                           <button class="btn btn-info" type="button" data-toggle="tooltip" title="新增" id="addSaltIpGrpBtn" onclick="addbutton_right(this)" ><span class="glyphicon glyphicon-plus"></span></button>\n' +
            '                      </div>';
-        if(type["type"] === "R"){
+        if(type["type"]["{{ exam.exam_id }}"] === "R"){
                for (var key in all_answers){
                    all_answer_R_M =  '<div class="input-group saltIp" style="width:100%;padding:0 0 1px 0;">'+
 						'<label class="input-group-addon">选项:</label>'+
-						'<input type="text" class="form-control" id="all_answers" name="all_answer" style="width:500px;" required value='+key+'>' +
+						'<input type="text" class="form-control" id="{{ exam.exam_id }}_all_answers" name="{{ exam.exam_id }}_all_answer" style="width:500px;" required value='+key+'>' +
 						'<span class="input-group-btn">'+
-    						'<button class="btn btn-info" type="button" data-toggle="tooltip" title="删除" id="delbutton_all" ><span class="glyphicon glyphicon-minus"></span></button>'+
+    						'<button class="btn btn-info" type="button" data-toggle="tooltip" title="删除" id="{{ exam.exam_id }}_delbutton_all" ><span class="glyphicon glyphicon-minus"></span></button>'+
     					'</span>'+
 					'</div>' + all_answer_R_M ;
                    if(all_answers[key]){
                        right_answer_R_W +=
-                                            '<textarea name="right_answer" id="right_answer" class="form-control" required placeholder="单选题只能有一个正确选项">'+key+'</textarea>'
+                                            '<textarea name="{{ exam.exam_id }}_right_answer" id="{{ exam.exam_id }}_right_answer" class="form-control" required placeholder="单选题只能有一个正确选项">'+key+'</textarea>'
                    }
                }
-               document.getElementById("all_answers").innerHTML = all_answer_R_M;
-               document.getElementById("right_answers").innerHTML = right_answer_R_W
-           }else  if (type["type"]==="M"){
+               document.getElementById("{{ exam.exam_id }}_all_answers").innerHTML = all_answer_R_M;
+               document.getElementById("{{ exam.exam_id }}_right_answers").innerHTML = right_answer_R_W
+           }else  if (type["type"]["{{ exam.exam_id }}"]==="M"){
                for (var key in all_answers){
                    all_answer_R_M = '<div class="input-group saltIp" style="width:100%;padding:0 0 1px 0;">'+
 						'<label class="input-group-addon">选项:</label>'+
-						'<input type="text" class="form-control" id="all_answers" name="all_answer" style="width:500px;" required value='+key+'>'+
+						'<input type="text" class="form-control" id="{{ exam.exam_id }}_all_answers" name="{{ exam.exam_id }}_all_answer" style="width:500px;" required value='+key+'>'+
 						'<span class="input-group-btn">'+
-    						'<button class="btn btn-info" type="button" data-toggle="tooltip" title="删除" id="delbutton_all" ><span class="glyphicon glyphicon-minus"></span></button>'+
+    						'<button class="btn btn-info" type="button" data-toggle="tooltip" title="删除" id="{{ exam.exam_id }}_delbutton_all" ><span class="glyphicon glyphicon-minus"></span></button>'+
     					'</span>'+
 					'</div>' + all_answer_R_M;
                    if (all_answers[key]){
                        right_answer_M = '<div class="input-group saltIp" style="width:100%;padding:0 0 1px 0;">'+
 						'<label class="input-group-addon">选项:</label>'+
-						'<input type="text" class="form-control" id="right_answer" name="right_answer" style="width:500px;" required value='+key+'>'+
+						'<input type="text" class="form-control" id="{{ exam.exam_id }}_right_answer" name="{{ exam.exam_id }}_right_answer" style="width:500px;" required value='+key+'>'+
 						'<span class="input-group-btn">'+
-    						'<button class="btn btn-info" type="button" data-toggle="tooltip" title="删除" id="delbutton_all" ><span class="glyphicon glyphicon-minus"></span></button>'+
+    						'<button class="btn btn-info" type="button" data-toggle="tooltip" title="删除" id="{{ exam.exam_id }}_delbutton_all" ><span class="glyphicon glyphicon-minus"></span></button>'+
     					'</span>'+
 					'</div>'+ right_answer_M;
                    }
                }
 
-               document.getElementById("all_answers").innerHTML = all_answer_R_M;
-               document.getElementById("right_answers").innerHTML = right_answer_M;
-           } else if(type["type"]==="W"){
+               document.getElementById("{{ exam.exam_id }}_all_answers").innerHTML = all_answer_R_M;
+               document.getElementById("{{ exam.exam_id }}_right_answers").innerHTML = right_answer_M;
+           } else if(type["type"]["{{ exam.exam_id }}"]==="W"){
                for (var key in all_answers) {
                        right_answer_R_W +=
-                           '<textarea name="right_answer" id="right_answer" class="form-control" required placeholder="单选题只能有一个正确选项">' + key + '</textarea>';
-                       document.getElementById("right_answers").innerHTML = right_answer_R_W;
+                           '<textarea name="{{ exam.exam_id }}_right_answer" id="{{ exam.exam_id }}_right_answer" class="form-control" required placeholder="单选题只能有一个正确选项">' + key + '</textarea>';
+                       document.getElementById("{{ exam.exam_id }}_right_answers").innerHTML = right_answer_R_W;
                    return false
                }
                right_answer_R_W +=
-                       '<textarea name="right_answer" id="right_answer" class="form-control" required placeholder="简答题答案可选写"></textarea>';
-                   document.getElementById("right_answers").innerHTML = right_answer_R_W
+                       '<textarea name="{{ exam.exam_id }}_right_answer" id="{{ exam.exam_id }}_right_answer" class="form-control" required placeholder="简答题答案可选写"></textarea>';
+                   document.getElementById("{{ exam.exam_id }}_right_answers").innerHTML = right_answer_R_W
 
            }
-        /*var url = location.search;
-       if (url.indexOf("?") !== -1) {
-           var str = url.substr(1);
-           strs = str.split("=");
-           a = strs[1];
-           a = a.split("&");
-           requesta = a[0];
-           requestb = strs[2];
-           alert(requestb)
-       }
-
-
-       $.get('/edit_exam_json/',{"id":requesta,"type":requestb},function (exam_info) {
-           //alert(exam_info);
-           var all_answer_R_M = '<button class="btn btn-info" type="button" data-toggle="tooltip" title="新增" id="addSaltIpGrpBtn" onclick="addbutton_all(this)" ><span class="glyphicon glyphicon-plus"></span></button>';
-           var right_answer_R_W = '';
-           var right_answer_M =
-               '                       <div class="input-group" id="saltIpGroup">\n' +
-               '                           <button class="btn btn-info" type="button" data-toggle="tooltip" title="新增" id="addSaltIpGrpBtn" onclick="addbutton_right(this)" ><span class="glyphicon glyphicon-plus"></span></button>\n' +
-               '                      </div>';
-           if(requestb === "R"){
-               for (var key in exam_info){
-                   alert(exam_info[key]);
-                   all_answer_R_M =  '<div class="input-group saltIp" style="width:100%;padding:0 0 1px 0;">'+
-						'<label class="input-group-addon">选项:</label>'+
-						'<input type="text" class="form-control" id="all_answers" name="all_answer" style="width:500px;" required value='+key+'>' +
-						'<span class="input-group-btn">'+
-    						'<button class="btn btn-info" type="button" data-toggle="tooltip" title="删除" id="delbutton_all" ><span class="glyphicon glyphicon-minus"></span></button>'+
-    					'</span>'+
-					'</div>' + all_answer_R_M ;
-                   if(exam_info[key]){
-                       right_answer_R_W +=
-                                            '<textarea name="right_answer" id="right_answer" class="form-control" required placeholder="单选题只能有一个正确选项">'+key+'</textarea>'
-                   }
-               }
-               document.getElementById("all_answers").innerHTML = all_answer_R_M;
-               document.getElementById("right_answers").innerHTML = right_answer_R_W
-           }else  if (requestb==="M"){
-               for (var key in exam_info){
-                   all_answer_R_M = '<div class="input-group saltIp" style="width:100%;padding:0 0 1px 0;">'+
-						'<label class="input-group-addon">选项:</label>'+
-						'<input type="text" class="form-control" id="all_answers" name="all_answer" style="width:500px;" required value='+key+'>'+
-						'<span class="input-group-btn">'+
-    						'<button class="btn btn-info" type="button" data-toggle="tooltip" title="删除" id="delbutton_all" ><span class="glyphicon glyphicon-minus"></span></button>'+
-    					'</span>'+
-					'</div>' + all_answer_R_M;
-                   if (exam_info[key]){
-                       right_answer_M = '<div class="input-group saltIp" style="width:100%;padding:0 0 1px 0;">'+
-						'<label class="input-group-addon">选项:</label>'+
-						'<input type="text" class="form-control" id="right_answer" name="right_answer" style="width:500px;" required value='+key+'>'+
-						'<span class="input-group-btn">'+
-    						'<button class="btn btn-info" type="button" data-toggle="tooltip" title="删除" id="delbutton_all" ><span class="glyphicon glyphicon-minus"></span></button>'+
-    					'</span>'+
-					'</div>'+ right_answer_M;
-                   }
-               }
-
-               document.getElementById("all_answers").innerHTML = all_answer_R_M;
-               document.getElementById("right_answers").innerHTML = right_answer_M;
-           } else if(requestb==="W"){
-               for (var key in exam_info) {
-                       right_answer_R_W +=
-                           '<textarea name="right_answer" id="right_answer" class="form-control" required placeholder="单选题只能有一个正确选项">' + key + '</textarea>';
-                       document.getElementById("right_answers").innerHTML = right_answer_R_W;
-                   return false
-               }
-               right_answer_R_W +=
-                       '<textarea name="right_answer" id="right_answer" class="form-control" required placeholder="简答题答案可选写"></textarea>';
-                   document.getElementById("right_answers").innerHTML = right_answer_R_W
-
-           } else {
-               for (var key in exam_info){
-                   alert(exam_info[key]);
-               }
-           }
-
-
-       });*/
-
     });
+
+function addbutton_all(obj){
+	html = '<div class="input-group saltIp" style="width:100%;padding:0 0 1px 0;">'+
+						'<label class="input-group-addon">选项:</label>'+
+						'<input type="text" class="form-control" id="{{ exam.exam_id }}_all_answers" name="{{ exam.exam_id }}_all_answer" style="width:500px;" required>'+
+						'<span class="input-group-btn">'+
+    						'<button class="btn btn-info" type="button" data-toggle="tooltip" title="删除" id="{{ exam.exam_id }}_delbutton_all" ><span class="glyphicon glyphicon-minus"></span></button>'+
+    					'</span>'+
+					'</div>';
+	obj.insertAdjacentHTML('beforebegin',html)
+}
+
+
+$(document).on('click','#{{ exam.exam_id }}_delbutton_all',function(){
+	var el = this.parentNode.parentNode;
+	var saltIp = $(this).parent().parent().find('#{{ exam.exam_id }}_all_answers').val();
+	if (saltIp === ""){
+		el.parentNode.removeChild(el);
+		return
+	}
+	alertify.confirm('您确定要删除选中的命令？',
+	function(e){
+		if(e){
+			$.ajax({
+				'url':'/url',
+				'type':'POST',
+				'async':false,
+				'dataType':'json',
+				'data':{'type':'delSaltIp','projectId':projectId,'saltIp':saltIp},
+				'success':function(result){
+					if (result.code){
+						el.parentNode.removeChild(el)
+					}else {
+						showError(result.msg)
+					}
+				}
+			})
+
+		}
+	})
+
+});
+
+function addbutton_right(obj){
+	html = '<div class="input-group saltIp" style="width:100%;padding:0 0 1px 0;">'+
+						'<label class="input-group-addon">选项:</label>'+
+						'<input type="text" class="form-control" id="{{exam.exam_id }}_right_answers" name="{{ exam.exam_id }}_right_answer" style="width:500px;" required>'+
+						'<span class="input-group-btn">'+
+    						'<button class="btn btn-info" type="button" data-toggle="tooltip" title="删除" id="{{ exam.exam_id }}_delbutton_right" ><span class="glyphicon glyphicon-minus"></span></button>'+
+    					'</span>'+
+					'</div>';
+	obj.insertAdjacentHTML('beforebegin',html)
+}
+
+
+$(document).on('click','#{{ exam.exam_id }}_delbutton_right',function(){
+	var el = this.parentNode.parentNode;
+	var saltIp = $(this).parent().parent().find('#{{ exam.exam_id }}_right_answers').val();
+	if (saltIp === ""){
+		el.parentNode.removeChild(el);
+		return
+	}
+	alertify.confirm('您确定要删除选中的命令？',
+	function(e){
+		if(e){
+			$.ajax({
+				'url':'/url',
+				'type':'POST',
+				'async':false,
+				'dataType':'json',
+				'data':{'type':'delSaltIp','projectId':projectId,'saltIp':saltIp},
+				'success':function(result){
+					if (result.code){
+						el.parentNode.removeChild(el)
+					}else {
+						showError(result.msg)
+					}
+				}
+			})
+
+		}
+	});
+
+});
+
+function diff_exam(id,type) {
+    alert(id);
+    var right_answer = document.getElementsByName(id+"_right_answer");
+    var all_answer = document.getElementsByName(id+"_all_answer");
+    var content = document.getElementsByName(id+"_content");
+    var project = document.getElementsByName(id+"_project");
+    var answers = [];
+    for (var k = 0; k < content.length; k++) {
+        for (var h = 0; h < project.length; h++) {
+            if (content[k].value === "" || project[h].value === "") {
+                alert("内容或项目不能为空")
+
+            } else {
+                if (type !== "W") {
+                    for (var j = 0; j < all_answer.length; j++) {
+                        answers.push(all_answer[j].value);
+                    }
+                    var flag;
+                    for (var i = 0; i < right_answer.length; i++) {
+                        if (answers.indexOf(right_answer[i].value) === -1) {
+                            flag = false;
+                            break
+                        } else {
+                            flag = true
+                        }
+                    }
+                    if (flag) {
+                        if (confirm("确认修改吗")) {
+                            $("#"+id+"_form").submit()
+                        } else {
+                            return false
+                        }
+                    } else {
+                        alert("答案与选项不符合")
+                    }
+                } else {
+                    if (confirm("确认修改吗")) {
+                        $("#"+id+"_form").submit()
+                    } else {
+                        return false
+                    }
+
+
+                }
+            }
+        }
+
+    }
+}
 
 </script>
 </html>

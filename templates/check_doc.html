@@ -88,49 +88,14 @@
         window.location.href="{% url 'upload_doc' %}"
 
     }
-    function isIE(){
-    　　if(!!window.ActiveXObject || "ActiveXObject" in window){
-    　　　　return true;
-    　　}else{
-    　　　　return false;
-    　　}
-    }
-    function isIE11(){
-    　　if((/Trident\/7\./).test(navigator.userAgent)){
-    　　　　return true;
-    　　}else{
-    　　　　return false;
-    　　}
-    }
-    function deltab(id,name) {
-        if(isIE()||isIE11()){
-            document.getElementById(name).removeNode(true);
-           document.getElementById(id).removeNode(true);
-           document.getElementById("home_page").click()
-        }  else{
-            var childrenNum = document.getElementById("tab_tittle_child").getElementsByTagName("a").length;
-            var childrenindex = document.getElementById("tab_tittle_child").getElementsByTagName("a").item(childrenNum-2).getAttribute("id");
-            //alert(childrenindex);
-            if(childrenNum === 2){
-                document.getElementById(name).remove();
-                document.getElementById(id).remove();
-                document.getElementById("home_page").click()
-            }else {
-                document.getElementById(name).remove();
-                document.getElementById(id).remove();
-                document.getElementById(childrenindex).click()
-            }
-
-        }
-    }
     function add_doc_tab(id,url,tag,name) {
-        var tab_exist = document.getElementById(tag);
+        var tab_exist = document.getElementById(name);
         if (tab_exist) {
             tab_exist.click()
         } else {
             var child_tittle = $("#tab_tittle_child");
             var child_content = $("#tab_container_child");
-            var node_tittle_child = '<li id='+'"'+name+'"'+'><a id=' + '"' + tag + '"' + ' data-toggle="tab" href="' + '#' + id + '"' + '>' + name +'\xa0\xa0'+'<button class="close" aria-hidden="true" onclick="deltab('+'\''+id+'\''+','+'\''+name+'\''+')"><span class="glyphicon glyphicon-remove-circle"> </span></button>'+ '</a></li>';
+            var node_tittle_child = '<li id='+'"'+tag+'"'+'><a id=' + '"' + name + '"' + ' data-toggle="tab" href="' + '#' + id + '"' + '>' + name +'\xa0\xa0'+'<button class="close" aria-hidden="true" onclick="deltab('+'\''+id+'\''+','+'\''+tag+'\''+','+'\''+name+'\''+')"><span class="glyphicon glyphicon-remove-circle"> </span></button>'+ '</a></li>';
             var node_content_child = '    <div id="' + id + '"' + ' class="tab-pane fade">\n' +
                                     '<div class="embed-responsive embed-responsive-4by3">\n' +
                                     '<iframe scrolling="auto" src="'+url+'">\n' +
@@ -147,7 +112,7 @@
                 '</div>\n' +
                 '    </div>';*/
 
-            document.getElementById(tag).click()
+            document.getElementById(name).click()
         }
     }
     function check_user(id,url,tag,name) {
@@ -162,6 +127,43 @@
 
         })
     }
+    function isIE(){
+    　　if(!!window.ActiveXObject || "ActiveXObject" in window){
+    　　　　return true;
+    　　}else{
+    　　　　return false;
+    　　}
+    }
+    function isIE11(){
+    　　if((/Trident\/7\./).test(navigator.userAgent)){
+    　　　　return true;
+    　　}else{
+    　　　　return false;
+    　　}
+    }
+    function deltab(id,name,tag) {
+        if(isIE()||isIE11()){
+            document.getElementById(name).removeNode(true);
+           document.getElementById(id).removeNode(true);
+           document.getElementById("home_page").click()
+        }  else{
+            var childrenNode = document.getElementById("tab_tittle_child").getAttribute("a");
+            var childrenNum = document.getElementById("tab_tittle_child").getElementsByTagName("a").length;
+            var childrenIndex = $("#"+name).index(childrenNode);
+            var childrenclick = document.getElementById("tab_tittle_child").getElementsByTagName("a").item(childrenIndex-1).getAttribute("id");
+            if(childrenNum === 2){
+                document.getElementById(name).remove();
+                document.getElementById(id).remove();
+                document.getElementById("home_page").click()
+            }else {
+                document.getElementById(name).remove();
+                document.getElementById(id).remove();
+                document.getElementById(childrenclick).click()
+            }
+
+        }
+    }
+
     function delete_doc(doc_name) {
         if (confirm("确定删除该文档？")){
             $.get('/delete_doc/',{"doc_name":doc_name},function (data) {
