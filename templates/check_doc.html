@@ -53,16 +53,16 @@
                                         <tr>
                                             <td align="left"><a href="javascript:void(0)" onclick="check_user('{{ doc.doc_id }}', '{{ doc.url }}','{{ doc.path }}','{{ doc.name }}')">{{ doc.name }}</a><br></td>
                                             {% if doc.tag == None %}
-                                                <td align="left"></td>
+                                                <td align="left" id="{{ doc.doc_id }}_tag"></td>
                                             {% else %}
-                                                <td align="left">{{ doc.tag}}</td>
+                                                <td align="left" id="{{ doc.doc_id }}_tag">{{ doc.tag}}</td>
                                             {% endif %}
-                                            <td align="left">{{ doc.P_Type}}</td>
-                                            <td align="left">{{ doc.edit}}</td>
+                                            <td align="left" id="{{ doc.doc_id }}_type">{{ doc.P_Type}}</td>
+                                            <td align="left" id="{{ doc.doc_id }}_edit">{{ doc.edit}}</td>
                                             <td align="left">{{ doc.create_time|date:'Y-m-d H:i:s'}}</td>
                                             <td align="left">{{ doc.submitter}}</td>
                                             {% if request.session.username == doc.submitter or request.session.is_admin != 0 %}
-                                                <td align="left"><a href="javascript:void(0);" onclick="delete_doc('{{ doc.name }}')">删除</a>  <a href="{% url 'edit_doc' %}?doc={{ doc.name }}">修改</a> </td>
+                                                <td align="left" id="{{ doc.doc_id }}_action"><a href="javascript:void(0);" onclick="delete_doc('{{ doc.name }}')">删除</a>  <a href="javascript:void(0)" onclick="edit_doc('{{ doc.doc_id }}')">修改</a> </td>
                                             {% else %}
                                                 <td align="left">删除 修改</td>
                                             {% endif %}
@@ -159,6 +159,54 @@
                 location.reload(true)
             })
         }
+    }
+
+    function edit_doc(doc_id) {
+        $.get('/edit_doc/',{"doc":doc_id},function(data){
+            document.getElementById(doc_id+"_tag").innerHTML = '<input class="form-control" type="text" id='+'\"'+data["docinfo"]["doc_id"]+'_tag_value'+'\"'+'value='+'\"'+data["docinfo"]["tag"]+'\"'+'>';
+            document.getElementById(doc_id+"_edit").innerHTML = '<select class="form-control" id='+'\"'+data["docinfo"]["doc_id"]+'_edit_value'+'\"'+'required>\n'+
+                                                                    '<option value="false" selected>'+'False'+'</option>\n'+
+                                                                    '<option value="true">'+'True'+'</option>\n'+
+                                                                '</select>';
+            document.getElementById(doc_id+"_type").innerHTML = '<select class="form-control" id='+'\"'+doc_id+'_type_value'+'\"'+'required>\n'+
+                                                                    '<option value='+'\"'+data["docinfo"]["P_Type"]+'\"'+'selected>'+data["docinfo"]["P_Type"]+'</option>\n'+
+                                                                '</select>';
+            document.getElementById(doc_id+"_action").innerHTML = '<a href="javascript:void(0);" onclick="submit('+'\''+doc_id+'\''+')">'+ '提交'+'</a>\n'+
+                                                                    '<a href="javascript:void(0);" onclick="cancel('+'\''+doc_id+'\''+')">'+ '取消'+'</a>\n';
+            for(var i in data["typelist"]){
+                $("#"+doc_id+"_type_value").append('<option value='+'\"'+data["typelist"][i]+'\"'+'>'+data["typelist"][i]+'</option>')
+            }
+        })
+    }
+
+    function cancel(doc_id) {
+        $.get('/edit_doc/',{"doc":doc_id},function(data){
+            var edit;
+            if(data["docinfo"]["edit"]){
+                edit = "True"
+            } else {
+                edit = "False"
+            }
+            document.getElementById(doc_id+"_tag").innerHTML = '<td align="left" id='+doc_id+'_tag'+'>'+data["docinfo"]["tag"]+'</td>';
+            document.getElementById(doc_id+"_edit").innerHTML = '<td align="left" id='+doc_id+'_edit'+'>'+edit+'</td>';
+            document.getElementById(doc_id+"_type").innerHTML = '<td align="left" id='+doc_id+'_type'+'>'+data["docinfo"]["P_Type"]+'</td>';
+            document.getElementById(doc_id+"_action").innerHTML = '<a href="javascript:woid(0)" onclick="delete_doc('+'\''+data["docinfo"]["name"]+'\''+')">删除</a>\n'+
+                                                                  '<a href="javascript:woid(0)" onclick="edit_doc('+'\''+data["docinfo"]["doc_id"]+'\''+')">修改</a>'
+        })
+
+    }
+    function submit(doc_id) {
+        var tag=document.getElementById(doc_id+"_tag_value").value;
+        var edit=document.getElementById(doc_id+"_edit_value").value;
+        var type=document.getElementById(doc_id+"_type_value").value;
+        $.post('/edit_doc/',{"doc_id":doc_id,"project":type,"edit":edit,"tag":tag},function (data){
+            if(data["message"]==="done"){
+                cancel(doc_id)
+            }
+
+        })
+
+
     }
 </script>
 </html>

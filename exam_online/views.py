@@ -888,21 +888,6 @@ def upload_doc(request):
                     exclude(Total_Type_values=user_p.P_Type)
         return render(request,'../templates/upload_doc.html',{"typelist":typelist,"user_p":user_p})
 
-def edit_doc(request):
-    if request.method == "GET":
-        doc = request.GET.get("doc")
-        docinfo = doc_info.objects.get(name=doc)
-        typelist = type.objects.filter(Total_Type='P_Type').exclude(Total_Type_values=docinfo.P_Type)
-        return render(request,'../templates/edit_doc.html',{"docinfo":docinfo,
-                                                            "typelist":typelist})
-    else:
-        doc = request.GET.get("doc")
-        project = request.POST.get("project")
-        edit = request.POST.get("edit")
-        tag = request.POST.get("tag")
-        doc_info.objects.filter(name=doc).update(P_Type=project,edit=edit,tag=tag)
-        return redirect('/check_doc/')
-
 def edit_exam_json(request):
     if request.method == "GET":
         all_answer = {}
@@ -1007,3 +992,30 @@ def delete_doc(request):
         return JsonResponse({"message":"success"})
     except BaseException as e:
         return JsonResponse({"message": e})
+
+@csrf_exempt
+def edit_doc(request):
+    if request.method == "GET":
+        doc = request.GET.get("doc")
+        docinfo = doc_info.objects.get(doc_id=doc)
+        docdict = {"doc_id":docinfo.doc_id,
+                    "P_Type":docinfo.P_Type,
+                   "edit":docinfo.edit,
+                   "tag":docinfo.tag,
+                   "name":docinfo.name}
+        typeinfo = type.objects.filter(Total_Type='P_Type').exclude(Total_Type_values=docinfo.P_Type)
+        typelist = []
+        for i in typeinfo:
+            typelist.append(i.Total_Type_values)
+        return JsonResponse({"docinfo":docdict,"typelist":typelist},safe=False)
+    else:
+        doc_id = request.POST.get("doc_id")
+        project = request.POST.get("project")
+        edit = request.POST.get("edit")
+        tag = request.POST.get("tag")
+        if edit == "true":
+            edit = True
+        else:
+            edit = False
+        doc_info.objects.filter(doc_id=doc_id).update(P_Type=project,edit=edit,tag=tag)
+        return JsonResponse({"message":"done"},safe=False)
