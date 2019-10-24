@@ -84,9 +84,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'examOnline',
-        'HOST': '15.96.140.13',
-        'USER': 'root',
-        'PASSWORD': 'qwe123',
+        'HOST': HOST,
+        'USER': USER,
+        'PASSWORD': PASSWORD,
     }
 }
 
@@ -141,11 +141,10 @@ UPLOAD_ROOT = os.path.join(BASE_DIR,'uploads')
 DOC_URL = '/doc_upload/'
 DOC_ROOT = os.path.join(BASE_DIR,'doc_upload')
 
-AUTH_LDAP_SERVER_URI = 'ldap://auth.hpicorp.net:389'
-AUTH_LDAP_BIND_DN = 'CN=renjie.wang@hp.com,OU=CN,OU=Asiapacific,OU=Users,OU=Accounts,DC=auth,DC=hpicorp,DC=net'
-AUTH_LDAP_BIND_PASSWORD = '$4Rfv%5Tgb^6Yhn'
-AUTH_LDAP_USER_SEARCH = LDAPSearch('OU=Users,OU=Accounts,dc=auth,dc=hpicorp,dc=net', ldap.SCOPE_SUBTREE, '(SAMAccountName=%(user)s)',)
-AUTH_LDAP_GROUP_SEARCH = LDAPSearch('CN=hpi_bys_ctss@hp.com,OU=CN,OU=Asiapacific,OU=Managed Groups,OU=Accounts,DC=auth,DC=hpicorp,DC=net', ldap.SCOPE_SUBTREE, '(objectClass=group)')
+AUTH_LDAP_SERVER_URI = HOSTIP
+AUTH_LDAP_BIND_DN = USER
+AUTH_LDAP_BIND_PASSWORD = PASSWORD
+AUTH_LDAP_USER_SEARCH = LDAPSearch('OU=Users,OU=Accounts,dc=xxx,dc=xxx,dc=xxx', ldap.SCOPE_SUBTREE, '(SAMAccountName=%(user)s)',)
 AUTH_LDAP_GROUP_TYPE = ActiveDirectoryGroupType()
 
 # Only users in this group can log in.
