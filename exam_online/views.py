@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 #from django.contrib.auth.decorators import login_required
 #from django.contrib.auth import authenticate, login, logout
-from .models import loginuser,type,exam,exam_answers,test_content,test_answer,doc_info,setting
+from .models import loginuser,type,exam,exam_answers,test_content,test_answer,doc_info,setting,roles,group_permissions
 #from django.contrib import messages
 from django.shortcuts import HttpResponseRedirect, HttpResponse,redirect,render
 from django.http import JsonResponse,StreamingHttpResponse
@@ -22,58 +22,6 @@ import time
 # Create your views here.
 email = "guest"
 
-'''def index(request):
-    if request.method == "POST":
-        loginform = LoginForm(request.POST)
-        if loginform.is_valid():
-            username = loginform.cleaned_data['username']
-            password = loginform.cleaned_data['password']
-            if loginuser.objects.filter(username=username):
-                user = authenticate(username=username, password=password)
-                try:
-                    if user is not None:
-                        login(request,user)
-                        return HttpResponseRedirect('/main/')
-                    else:
-                        messages.error(request, "用户名或者密码错误，请返回重新输入。")
-                        return render(request, '../templates/login.html', {'MyLoginForm': LoginForm})
-                except BaseException as e:
-                    return render(request, '../templates/error.html', {'error': e})
-            elif loginuser.objects.filter(email=username):
-                p = loginuser.objects.get(email=username)
-                user =authenticate(username=p.username,password=password)
-                try:
-                    if user is not None:
-                        login(request,user)
-                        return HttpResponseRedirect('/main/')
-                    else:
-                        messages.error(request, "用户名或者密码错误，请返回重新输入。")
-                        return render(request, '../templates/login.html', {'MyLoginForm': LoginForm})
-                except BaseException as e:
-                    return render(request, '../templates/error.html', {'error': e})
-            elif username.endswith('@hp.com'):
-                return render(request,'../templates/error.html',{'error':r'首次登录请使用HP域帐号登录，'
-                                                                         r'之后使用HP域帐号和HP邮箱皆可。'})
-            else:
-                try:
-                    user = authenticate(username=username, password=password)
-
-                    if user is not None:
-                        login(request, user)
-                        loginuser.objects.get_or_create(username=request.user, email=request.user.email,
-                                                        create_Time=datetime.datetime.now())
-                        return HttpResponseRedirect('/edit_user_info/')
-                    else:
-                        messages.error(request, "用户名或者密码错误，请返回重新输入。")
-                        return render(request, '../templates/login.html', {'MyLoginForm': LoginForm})
-                except BaseException as e:
-                    return render(request, '../templates/error.html', {'error': e})
-
-
-        else:
-            return render(request, '../templates/error.html', {'error': "wrong1"})
-    else:
-        return render(request, '../templates/login.html', {'MyLoginForm':LoginForm})'''
 def index(request):
     next = request.GET.get("next")
     if next:
@@ -91,11 +39,15 @@ def index(request):
                         request.session["password"] = password
                         user = loginuser.objects.filter(username=username)
                         if not user:
-                            loginuser.objects.create(username=username, create_Time=datetime.datetime.now())
-                            request.session["is_admin"] = loginuser.objects.get(username=username).is_admin
+                            loginuser.objects.create(username=username,
+                                                     create_Time=datetime.datetime.now(),
+                                                     last_login_time=datetime.datetime.now())
+                            roles.objects.create(user_name=username,role_name="User")
+                            request.session["role"] = roles.objects.get(user_name=username).role_name
                             return HttpResponseRedirect('/edit_user_info/')
                         else:
-                            request.session["is_admin"] = loginuser.objects.get(username=username).is_admin
+                            loginuser.objects.filter(username=username).update(last_login_time=datetime.datetime.now())
+                            request.session["role"] = roles.objects.get(user_name=username).role_name
                             return HttpResponseRedirect('/%s/'%next)
                 except BaseException as e:
                     Message = {"message": "用户名或密码错误，请重新输入。"}
@@ -107,6 +59,8 @@ def index(request):
                     if password_auth:
                         request.session["username"] = username
                         request.session["password"] = password
+                        loginuser.objects.filter(username=username).update(last_login_time=datetime.datetime.now())
+                        request.session["role"] = roles.objects.get(user_name=username).role_name
                         return HttpResponseRedirect('/main/')
                     else:
                         Message = {"message": "密码错误，请重新输入。"}
@@ -131,14 +85,18 @@ def index(request):
                         request.session["password"] = password
                         user = loginuser.objects.filter(username=username)
                         if not user:
-                            loginuser.objects.create(username=username,create_Time=datetime.datetime.now())
-                            request.session["is_admin"] = loginuser.objects.get(username=username).is_admin
+                            loginuser.objects.create(username=username,
+                                                     create_Time=datetime.datetime.now(),
+                                                     last_login_time=datetime.datetime.now())
+                            roles.objects.create(user_name=username, role_name="User")
+                            request.session["role"] = roles.objects.get(user_name=username).role_name
                             return HttpResponseRedirect('/edit_user_info/')
                         else:
-                            request.session["is_admin"] = loginuser.objects.get(username=username).is_admin
+                            loginuser.objects.filter(username=username).update(last_login_time=datetime.datetime.now())
+                            request.session["role"] = roles.objects.get(user_name=username).role_name
                             return HttpResponseRedirect('/main/')
                 except BaseException as e:
-                    Message = {"message": "用户名或密码错误，请重新输入。"}
+                    Message = {"message": "%s"%e}
                     return render(request, '../templates/login.html', {"message": json.dumps(Message)})
             else:
                 user = loginuser.objects.filter(username=username)
@@ -147,8 +105,8 @@ def index(request):
                     if password_auth:
                         request.session["username"] = username
                         request.session["password"] = password
-                        request.session["is_admin"] = loginuser.objects.get(username=username).is_admin
-                        print(request.session["is_admin"])
+                        loginuser.objects.filter(username=username).update(last_login_time=datetime.datetime.now())
+                        request.session["role"] = roles.objects.get(user_name=username).role_name
                         return HttpResponseRedirect('/main/')
                     else:
                         Message = {"message": "密码错误，请重新输入。"}
@@ -164,7 +122,10 @@ def backup_setting(request):
     return render(request, '../templates/backup_setting.html')
 
 def public_office(request):
-    return render(request,'../templates/public_office.html')
+    global email
+    email = request.session["username"]
+    Message = {"message": "start"}
+    return render(request,'../templates/public_office.html', {"message": json.dumps(Message)})
 
 def person_setting(request):
     return render(request, '../templates/person_setting.html')
@@ -251,7 +212,6 @@ def create_exam(request):
         return render(request, "../templates/my_exam.html", {"exams": exam.objects.filter(
             submitter=request.session["username"]).all()})
 
-
 def iframe_main(request):
     return render(request, '../templates/iframe_main.html')
 
@@ -313,7 +273,7 @@ def my_exam(request):
                                                              "exams":exam.objects.filter(
                                                                  submitter=request.session["username"]).all()})
     else:
-        if request.session["is_admin"] == 0:
+        if request.session["role"] == "user":
             return render(request,"../templates/my_exam.html",{"exams":exam.objects.filter(
                                                                 submitter=request.session["username"]).all()})
         else:
@@ -375,7 +335,6 @@ def edit_exam(request):
             for i in all_answer:
                 exam_answers.objects.create(exam_id=exam_id, answers=i, answers_values=False)
             for j in right_answer:
-                print(j)
                 exam_answers.objects.filter(answers=j).update(answers_values=True)
         elif exam_type == "W":
             project = request.POST.get("%s_project"%exam_id)
@@ -403,7 +362,7 @@ def check_exam(request):
         all_answer = []
         right_answer = []
         id = request.GET.get("id")
-        if request.session["is_admin"] == 0:
+        if request.session["role"] == "user":
             exam_id = exam.objects.filter(submitter=request.session["username"]).values("exam_id")
             for j in exam_id:
                 exam_ids.append(j["exam_id"])
@@ -511,7 +470,6 @@ def check_exam(request):
                                                                         "right_answer": right_answer,
                                                                         "exam_previous": exam_ids[exam_index - 1],
                                                                         "exam_next": exam_ids[exam_index + 1]})
-
 
 def check_test(request):
     if request.method == "GET":
@@ -722,7 +680,7 @@ def start_test(request):
                                                                 "test_time":test_time,})
 
 def test_analysis(request):
-    if request.session["is_admin"] == 0:
+    if request.session["role"] == "role":
         return render(request, '../templates/test_analysis.html', {"user": request.session["username"]})
     else:
         user_list = loginuser.objects.all().exclude(username=request.session["username"])
@@ -730,7 +688,7 @@ def test_analysis(request):
                                                              "user":request.session["username"]})
 
 def test_record(request):
-    if request.session["is_admin"] == 0:
+    if request.session["role"] == "user":
         test_info = test_content.objects.all().filter(submitter=request.session["username"])
         return render(request,"../templates/test_record.html",{"test_info":test_info})
     else:
@@ -777,7 +735,7 @@ def check_doc(request):
     global email
     email = request.session["username"]
     doc_info_all_list = []
-    doc_info_all = doc_info.objects.all()
+    doc_info_all = doc_info.objects.all().exclude(P_Type="Office_Supplies").exclude(P_Type="Grade").exclude(P_Type="Attendance_statistics")
     for doc in doc_info_all:
         doc_info_dic = {}
         if doc.type == "xls" or doc.type =="xlsx":
@@ -833,7 +791,6 @@ def check_doc(request):
             doc_info_dic["create_time"] = doc.create_time
             doc_info_all_list.append(doc_info_dic)
     return render(request,'../templates/check_doc.html',{"doc_info_all":doc_info_all_list})
-
 
 @csrf_exempt
 def upload_doc(request):
@@ -918,7 +875,6 @@ def file_upload(request):
         upload_info = json.dumps(upload_info)
         return HttpResponse(upload_info, content_type="application/json")
 
-
 #此为office online处理函数
 def file_iterator(filename,chunk_size=512):
     '''read file'''
@@ -955,7 +911,6 @@ def wopiGetFileInfo(request,fileid = "test.txt"):
         json_data['UserFriendlyName'] = email
         return HttpResponse(json.dumps(json_data,ensure_ascii=False), content_type='application/json; charset=utf-8')
     except NameError as e:
-        print(e)
         return render(request,'../templates/main.html')
 
 @csrf_exempt
@@ -1019,3 +974,89 @@ def edit_doc(request):
             edit = False
         doc_info.objects.filter(doc_id=doc_id).update(P_Type=project,edit=edit,tag=tag)
         return JsonResponse({"message":"done"},safe=False)
+
+@csrf_exempt
+def create_doc(request):
+    if request.method == "POST":
+        doc = request.FILES.get("filename")
+        type = request.POST.get("type")
+        doc_parr = doc.name.strip()
+        doc_parr = doc_parr.replace(" ", "_")
+        parrt = {}
+        p = Pinyin()
+        regex_str = re.compile(".*?([\u4E00-\u9FA5]+).*?")
+        match_obj = regex_str.findall(doc_parr)
+        for i in match_obj:
+            parrt[i] = p.get_initials(i, "")
+        for j, k in parrt.items():
+            doc_parr = re.sub(j, k, doc_parr)
+        ipstamp = request.META["REMOTE_ADDR"].replace(".", "")
+        timestamp = time.strftime("%Y%m%d%H%M%S", time.localtime())
+        doc_id = ipstamp + timestamp + doc_parr.split(".")[0]
+        try:
+            if doc_parr not in [i for i in os.listdir(DOC_ROOT)]:
+                if doc_parr.endswith("xlsx") or doc_parr.endswith("xls"):
+                    doc_path = os.path.join(DOC_ROOT,doc_parr)
+                    destination = open(doc_path, 'wb+')
+                    for chunk in doc.chunks():
+                        destination.write(chunk)
+                    destination.close()
+                    doc_info.objects.create(name=doc.name,
+                                            path=doc_parr,
+                                            type="xlsx",
+                                            P_Type=type,
+                                            edit=True,submitter=request.session["username"],
+                                            tag=type,
+                                            create_time=datetime.datetime.now(),
+                                            doc_id=doc_id)
+                    return redirect('/public_office/')
+                else:
+                    Message = {"message": "该模块只能上传excel文档！"}
+                    return render(request, '../templates/public_office.html', {"message": json.dumps(Message)})
+            else:
+                Message = {"message": "%s文件名重复，请改名" % doc.name}
+                return render(request, '../templates/public_office.html', {"message": json.dumps(Message)})
+        except BaseException as e:
+            Message = {"message": e}
+            return render(request, '../templates/public_office.html', {"message": json.dumps(Message)})
+
+def get_doc(request):
+    if request.method == "GET":
+        type = request.GET.get("type")
+        doc_info_all = doc_info.objects.all().order_by("-create_time")
+        Office_Supplies_doc_list = []
+        Attendance_statistics_doc_list = []
+        Grade_doc_list = []
+        wopiserver = setting.objects.get(strings="WOPI_SERVER").string_value
+        hostip = setting.objects.get(strings="HOST_IP").string_value
+        for doc in doc_info_all:
+            Office_Supplies_doc_dict = {}
+            Attendance_statistics_doc_dict = {}
+            Grade_doc_dict = {}
+            if doc.P_Type == "Office_Supplies":
+                Office_Supplies_doc_dict["name"] = doc.name
+                Office_Supplies_doc_dict["url"] = "http://%s/x/_layouts/xlviewerinternal.aspx?" \
+                                                  "ui=zh-CN&rs=zh-CN&WOPISrc=http://%s/wopi/files/%s" % \
+                                                  (wopiserver, hostip, doc.path)
+                Office_Supplies_doc_dict["createtime"] = doc.create_time.strftime("%Y-%m-%d")
+                Office_Supplies_doc_list.append(Office_Supplies_doc_dict)
+            elif doc.P_Type == "Attendance_statistics":
+                Attendance_statistics_doc_dict["name"] = doc.name
+                Attendance_statistics_doc_dict["url"] = "http://%s/x/_layouts/xlviewerinternal.aspx?" \
+                                                        "ui=zh-CN&rs=zh-CN&WOPISrc=http://%s/wopi/files/%s" % \
+                                                        (wopiserver, hostip, doc.path)
+                Attendance_statistics_doc_dict["createtime"] = doc.create_time.strftime("%Y-%m-%d")
+                Attendance_statistics_doc_list.append(Attendance_statistics_doc_dict)
+            elif doc.P_Type == "Grade":
+                Grade_doc_dict["name"] = doc.name
+                Grade_doc_dict["url"] = "http://%s/x/_layouts/xlviewerinternal.aspx?" \
+                                        "ui=zh-CN&rs=zh-CN&WOPISrc=http://%s/wopi/files/%s" % \
+                                        (wopiserver, hostip, doc.path)
+                Grade_doc_dict["createtime"] = doc.create_time.strftime("%Y-%m-%d")
+                Grade_doc_list.append(Grade_doc_dict)
+        if type == "doc_Office_Supplies":
+            return JsonResponse({"Office_Supplies":Office_Supplies_doc_list},safe=False)
+        elif type == "doc_Attendance_statistics":
+            return JsonResponse({"Attendance_statistics": Attendance_statistics_doc_list}, safe=False)
+        else:
+            return JsonResponse({"Grade": Grade_doc_list}, safe=False)

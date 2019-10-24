@@ -60,7 +60,7 @@
                                             <td align="left" id="{{ doc.doc_id }}_edit">{{ doc.edit}}</td>
                                             <td align="left">{{ doc.create_time|date:'Y-m-d H:i:s'}}</td>
                                             <td align="left">{{ doc.submitter}}</td>
-                                            {% if request.session.username == doc.submitter or request.session.is_admin != 0 %}
+                                            {% if request.session.username == doc.submitter or request.session.role != "User" and request.session.role != "Editor"%}
                                                 <td align="left" id="{{ doc.doc_id }}_action"><a href="javascript:void(0);" onclick="delete_doc('{{ doc.name }}')">删除</a>  <a href="javascript:void(0)" onclick="edit_doc('{{ doc.doc_id }}')">修改</a> </td>
                                             {% else %}
                                                 <td align="left">删除 修改</td>

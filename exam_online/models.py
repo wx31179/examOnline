@@ -10,7 +10,7 @@ class loginuser(models.Model):
     username = models.CharField(max_length=100)
     password = models.CharField(max_length=100,null=True)
     P_Type = models.CharField(max_length=100,null=True)
-    is_admin = models.IntegerField(default=0)
+    last_login_time = models.DateTimeField("最后登录时间")
     create_Time = models.DateTimeField("创建时间")
 
 
@@ -67,3 +67,16 @@ class doc_info(models.Model):
     edit = models.BooleanField(null=True)
     submitter = models.CharField(max_length=100)
     create_time = models.DateTimeField("创建时间")
+
+class roles(models.Model):
+    user_name = models.CharField(max_length=100)
+    role_name = models.CharField(max_length=100)
+    comment = models.CharField(max_length=100,null=True)
+
+class group_permissions(models.Model):
+    name = models.CharField(max_length=100)
+    add = models.BooleanField(default=0)
+    delete = models.BooleanField(default=0)
+    edit = models.BooleanField(default=0)
+    query = models.BooleanField(default=0)
+    view = models.CharField(max_length=10,null=True)

@@ -2,10 +2,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <link href="{% static 'css/bootstrap.min.css' %}?v=5.8" rel="stylesheet">
+    <link href="{% static 'css/custom.css' %}?v=1.1" rel="stylesheet">
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
-<body>
-<img style="padding-top:200px;padding-left: 500px" alt="建设中" src="{% static 'images/build.gif' %}">
+<style>
+img{
+    width: 800px;
+}
+</style>
+<body id="main">
+    <div class="container-fluid">
+        <hr>
+        <div class="row clearfix" style="padding-top: 20px">
+            <div class="col-lg-6">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <div class="panel-title">
+                            员工风采
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div id="myCarousel" class="carousel slide">
+                            <ol class="carousel-indicators">
+                                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                                <li data-target="#myCarousel" data-slide-to="1"></li>
+                                <li data-target="#myCarousel" data-slide-to="2"></li>
+                            </ol>
+                            <div class="carousel-inner" style="height: 500px;width: 827px">
+                                <div class="item active">
+                                    <img  src="../uploads/153320110720191009101550.jpg" alt="backimage">
+                                </div>
+                                <div class="item">
+                                    <img  src="../static/images/backimage.jpg" alt="backimage">
+                                </div>
+                                <div class="item">
+                                    <img  src="../static/images/bulid.jpg" alt="backimage">
+                                </div>
+                            </div>
+                            <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                                <span class="sr-only">Next</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-5">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <div class="panel-title">
+                            活动统计
+                        </div>
+                    </div>
+                    <div class="panel-body" style="height: 530px">
+                        ad
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row clearfix">
+            <div class="col-lg-12">
+                <div id="message">
+
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <div class="panel-title">
+                            办公用品
+                            <button class=" btn btn-xs btn-default" style="float: right" onclick="create_doc('Office_Supplies')">上传新文档</button>
+                        </div>
+
+                    </div>
+                    <div id="doc_Office_Supplies" class="panel-body">
+                        {% for doc in Office_Supplies %}
+
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <div class="panel-title">
+                            考勤统计
+                            <button class=" btn btn-xs btn-default" style="float: right" onclick="create_doc('Attendance_statistics')">上传新文档</button>
+                        </div>
+                    </div>
+                    <div id="doc_Attendance_statistics" class="panel-body">
+                        {% for doc in Attendance_statistics %}
+                            <div style="padding-bottom: 5px">
+                                <a href="{{ doc.url }}" target="_blank">{{ doc.name }}</a>
+                                <span style="float: right;margin-right: 30px">{{ doc.createtime | date:'Y-m-d' }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <div class="panel-title">
+                            绩效评估
+                            <button class=" btn btn-xs btn-default" style="float: right" onclick="create_doc('Grade')">上传新文档</button>
+                        </div>
+                    </div>
+                    <div id="doc_Grade" class="panel-body">
+                        {% for doc in Grade %}
+                            <div style="padding-bottom: 5px">
+                                <a href="{{ doc.url }}" target="_blank">{{ doc.name }}</a>
+                                <span style="float: right;margin-right: 30px">{{ doc.createtime | date:'Y-m-d' }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
+<script>
+$(document).ready(function () {
+   $.get("/get_doc/",{"type":"doc_Office_Supplies"},function (data) {
+       var list="";
+       for (var info in data["Office_Supplies"]){
+           var name = data["Office_Supplies"][info]["name"];
+           var url = data["Office_Supplies"][info]["url"];
+           var time = data["Office_Supplies"][info]["createtime"];
+           list = list +
+                                       '<div style="padding-bottom: 5px">\n'+
+                                '<a href="'+url+'\"'+' target="_blank">'+name+'</a>\n'+
+                                '<span style="float: right;margin-right: 30px">'+time+'</span>\n'+
+                            '</div>'
+       }
+       document.getElementById("doc_Office_Supplies").innerHTML = list
+   });
+   $.get("/get_doc/",{"type":"doc_Grade"},function (data) {
+       var list="";
+       for (var info in data["Grade"]){
+          var name = data["Grade"][info]["name"];
+           var url = data["Grade"][info]["url"];
+           var time = data["Grade"][info]["createtime"];
+           list = list +
+                                       '<div style="padding-bottom: 5px">\n'+
+                                '<a href="'+url+'\"'+' target="_blank">'+name+'</a>\n'+
+                                '<span style="float: right;margin-right: 30px">'+time+'</span>\n'+
+                            '</div>'
+       }
+       document.getElementById("doc_Grade").innerHTML = list
+   });
+   $.get("/get_doc/",{"type":"doc_Attendance_statistics"},function (data) {
+       var list="";
+       for (var info in data["Attendance_statistics"]){
+           var name = data["Attendance_statistics"][info]["name"];
+           var url = data["Attendance_statistics"][info]["url"];
+           var time = data["Attendance_statistics"][info]["createtime"];
+           list = list +
+                                       '<div style="padding-bottom: 5px">\n'+
+                                '<a href="'+url+'\"'+' target="_blank">'+name+'</a>\n'+
+                                '<span style="float: right;margin-right: 30px">'+time+'</span>\n'+
+                            '</div>'
+       }
+       document.getElementById("doc_Attendance_statistics").innerHTML = list;
+   })
+});
+
+function create_doc(type) {
+    var doc=document.getElementById("create_"+type);
+    if(doc){
+        alert("一次只能上传一个文档，请上传完毕后再上传下一个文档！")
+    }else {
+        $('#'+'doc_'+type).before('<form role="form" method="post" id="'+'div_'+type+'\"'+'action="/create_doc/" enctype="multipart/form-data">\n'+
+                            '<input name="type" value='+'\"'+type+'\"'+'hidden>\n'+
+                            '<input name="filename" class="btn btn-primary" type="file" style="margin:10px" required><button type="submit" class="btn btn-xs" style="margin:10px">上传</button>\xa0<button class="btn btn-xs" onclick="cancel('+'\''+'div_'+type+'\''+')">取消</a>\n'+
+                            '</form>')
+    }
+
+}
+
+function cancel(type) {
+    $('#'+type).remove()
+}
+
+var message = {{ message|safe }};
+if(message["message"] !== "start"){
+    document.getElementById("message").innerHTML = '<div class="alert alert-danger">'+message["message"]+'</div>'
+}
+
+</script>
 </html>

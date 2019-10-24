@@ -6,7 +6,7 @@
                     <a class="navbar-brand" href={% url 'main' %}>在线测试平台</a>
                 </div>
                 <ul class="nav navbar-nav navbar-right">
-                    {% if request.session.is_admin == 1 %}
+                    {% if request.session.role == "Admin" or request.session.role == "GroupLeadr"  %}
                     <li><a target="_blank" href={% url 'backup_setting' %}><span class="glyphicon glyphicon-wrench"></span><span>  后台管理</span></a> </li>
                     {% endif %}
                     <li><a href="#"><span class="glyphicon glyphicon-user"></span> {{request.session.username}}，欢迎登录</a></li>
