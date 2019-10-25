@@ -64,7 +64,7 @@ img{
                         </div>
                     </div>
                     <div class="panel-body" style="height: 530px">
-                        ad
+                        Test Page
                     </div>
                 </div>
             </div>
@@ -81,7 +81,9 @@ img{
                     <div class="panel-heading">
                         <div class="panel-title">
                             办公用品
-                            <button class=" btn btn-xs btn-default" style="float: right" onclick="create_doc('Office_Supplies')">上传新文档</button>
+                            {% if request.session.role == "Admin" or request.session.role == "Editor"  %}
+                                <button class=" btn btn-xs btn-default" style="float: right" onclick="create_doc('Office_Supplies')">上传新文档</button>
+                            {% endif %}
                         </div>
 
                     </div>
@@ -97,7 +99,9 @@ img{
                     <div class="panel-heading">
                         <div class="panel-title">
                             考勤统计
-                            <button class=" btn btn-xs btn-default" style="float: right" onclick="create_doc('Attendance_statistics')">上传新文档</button>
+                            {% if request.session.role == "Admin" or request.session.username == "vivian"  %}
+                                <button class=" btn btn-xs btn-default" style="float: right" onclick="create_doc('Attendance_statistics')">上传新文档</button>
+                            {% endif %}
                         </div>
                     </div>
                     <div id="doc_Attendance_statistics" class="panel-body">
@@ -115,7 +119,9 @@ img{
                     <div class="panel-heading">
                         <div class="panel-title">
                             绩效评估
-                            <button class=" btn btn-xs btn-default" style="float: right" onclick="create_doc('Grade')">上传新文档</button>
+                            {% if request.session.role == "Admin" or request.session.username == "junqing.chen@hp.com"  %}
+                                <button class=" btn btn-xs btn-default" style="float: right" onclick="create_doc('Grade')">上传新文档</button>
+                            {% endif %}
                         </div>
                     </div>
                     <div id="doc_Grade" class="panel-body">
@@ -139,46 +145,80 @@ $(document).ready(function () {
            var name = data["Office_Supplies"][info]["name"];
            var url = data["Office_Supplies"][info]["url"];
            var time = data["Office_Supplies"][info]["createtime"];
-           list = list +
-                                       '<div style="padding-bottom: 5px">\n'+
-                                '<a href="'+url+'\"'+' target="_blank">'+name+'</a>\n'+
-                                '<span style="float: right;margin-right: 30px">'+time+'</span>\n'+
-                            '</div>'
+           var file = data["Office_Supplies"][info]["file"];
+           var role = data["Office_Supplies"][info]["role"];
+           if (role === "Admin" || role === "Editor"){
+                list = list +
+                    '<div style="padding-bottom: 5px">\n'+
+                        '<a href="javascript:void(0)" onclick=opendoc_url('+'\"'+url+'\"'+')>'+name+'</a>\n'+
+                        '<a href='+'\"'+file+'\"'+' style="float: right" download >下载</a>\n'+
+                        '<span style="float: right;margin-right: 30px">'+time+'</span>\n'+
+                    '</div>'
+           } else{
+                list = list +
+                    '<div style="padding-bottom: 5px">\n'+
+                       '<a href="javascript:void(0)" onclick=opendoc_url('+'\"'+url+'\"'+')>'+name+'</a>\n'+
+                        '<span style="float: right;margin-right: 30px">'+time+'</span>\n'+
+                    '</div>'
+           }
+
        }
        document.getElementById("doc_Office_Supplies").innerHTML = list
    });
    $.get("/get_doc/",{"type":"doc_Grade"},function (data) {
        var list="";
        for (var info in data["Grade"]){
-          var name = data["Grade"][info]["name"];
-           var url = data["Grade"][info]["url"];
-           var time = data["Grade"][info]["createtime"];
-           list = list +
-                                       '<div style="padding-bottom: 5px">\n'+
-                                '<a href="'+url+'\"'+' target="_blank">'+name+'</a>\n'+
-                                '<span style="float: right;margin-right: 30px">'+time+'</span>\n'+
-                            '</div>'
+            var name = data["Grade"][info]["name"];
+            var url = data["Grade"][info]["url"];
+            var time = data["Grade"][info]["createtime"];
+            var file = data["Grade"][info]["file"];
+            var role = data["Grade"][info]["role"];
+            if (role === "Admin" || role === "Editor"){
+                list = list +
+                    '<div style="padding-bottom: 5px">\n'+
+                        '<a href="javascript:void(0)" onclick=opendoc_url('+'\"'+url+'\"'+')>'+name+'</a>\n'+
+                        '<a href='+'\"'+file+'\"'+' style="float: right" download >下载</a>\n'+
+                        '<span style="float: right;margin-right: 30px">'+time+'</span>\n'+
+                    '</div>'
+           } else{
+                list = list +
+                    '<div style="padding-bottom: 5px">\n'+
+                        '<a href="javascript:void(0)" onclick=opendoc_url('+'\"'+url+'\"'+')>'+name+'</a>\n'+
+                        '<span style="float: right;margin-right: 30px">'+time+'</span>\n'+
+                    '</div>'
+           }
        }
        document.getElementById("doc_Grade").innerHTML = list
    });
    $.get("/get_doc/",{"type":"doc_Attendance_statistics"},function (data) {
        var list="";
        for (var info in data["Attendance_statistics"]){
-           var name = data["Attendance_statistics"][info]["name"];
-           var url = data["Attendance_statistics"][info]["url"];
-           var time = data["Attendance_statistics"][info]["createtime"];
-           list = list +
-                                       '<div style="padding-bottom: 5px">\n'+
-                                '<a href="'+url+'\"'+' target="_blank">'+name+'</a>\n'+
-                                '<span style="float: right;margin-right: 30px">'+time+'</span>\n'+
-                            '</div>'
+            var name = data["Attendance_statistics"][info]["name"];
+            var url = data["Attendance_statistics"][info]["url"];
+            var time = data["Attendance_statistics"][info]["createtime"];
+            var file = data["Attendance_statistics"][info]["file"];
+            var role = data["Attendance_statistics"][info]["role"];
+            if (role === "Admin" || role === "Editor"){
+                list = list +
+                        '<div style="padding-bottom: 5px">\n'+
+                            '<a href="javascript:void(0)" onclick=opendoc_url('+'\"'+url+'\"'+')>'+name+'</a>\n'+
+                            '<a href='+'\"'+file+'\"'+' style="float: right" download >下载</a>\n'+
+                            '<span style="float: right;margin-right: 30px">'+time+'</span>\n'+
+                        '</div>'
+           } else{
+                list = list +
+                        '<div style="padding-bottom: 5px">\n'+
+                            '<a href="javascript:void(0)" onclick=opendoc_url('+'\"'+url+'\"'+')>'+name+'</a>\n'+
+                            '<span style="float: right;margin-right: 30px">'+time+'</span>\n'+
+                        '</div>'
+           }
        }
        document.getElementById("doc_Attendance_statistics").innerHTML = list;
    })
 });
 
 function create_doc(type) {
-    var doc=document.getElementById("create_"+type);
+    var doc=document.getElementById("div_"+type);
     if(doc){
         alert("一次只能上传一个文档，请上传完毕后再上传下一个文档！")
     }else {
@@ -194,6 +234,16 @@ function cancel(type) {
     $('#'+type).remove()
 }
 
+function opendoc_url(url) {
+    $.get('/check_user/',function (data) {
+        if (data["user"]==="guest") {
+            location.reload(true)
+        } else {
+           window.open (url, "newwindow", "height=800, width=1200, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no")
+        }
+    })
+
+}
 var message = {{ message|safe }};
 if(message["message"] !== "start"){
     document.getElementById("message").innerHTML = '<div class="alert alert-danger">'+message["message"]+'</div>'

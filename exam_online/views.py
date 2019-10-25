@@ -21,7 +21,7 @@ import time
 
 # Create your views here.
 email = "guest"
-
+role = "guest"
 def index(request):
     next = request.GET.get("next")
     if next:
@@ -904,7 +904,13 @@ def wopiGetFileInfo(request,fileid = "test.txt"):
         json_data['Version'] = '1.0'
         json_data['SupportsUpdate'] = True
         if doc_info.objects.get(path=fileid).edit:
-            json_data['UserCanWrite'] = True
+            if doc_info.objects.get(path=fileid).P_Type in ["Grade","Attendance_statistics"]:
+                if role == "Admin" or role == "GroupLeader":
+                    json_data['UserCanWrite'] = True
+                else:
+                    json_data['UserCanWrite'] = False
+            else:
+                json_data['UserCanWrite'] = True
         else:
             json_data['UserCanWrite'] = False
         json_data['SupportsLocks'] = True
@@ -1022,6 +1028,8 @@ def create_doc(request):
 
 def get_doc(request):
     if request.method == "GET":
+        global role
+        role = request.session["role"]
         type = request.GET.get("type")
         doc_info_all = doc_info.objects.all().order_by("-create_time")
         Office_Supplies_doc_list = []
@@ -1039,6 +1047,8 @@ def get_doc(request):
                                                   "ui=zh-CN&rs=zh-CN&WOPISrc=http://%s/wopi/files/%s" % \
                                                   (wopiserver, hostip, doc.path)
                 Office_Supplies_doc_dict["createtime"] = doc.create_time.strftime("%Y-%m-%d")
+                Office_Supplies_doc_dict["file"] = "http://%s/doc_upload/%s"%(hostip,doc.path)
+                Office_Supplies_doc_dict["role"] = request.session["role"]
                 Office_Supplies_doc_list.append(Office_Supplies_doc_dict)
             elif doc.P_Type == "Attendance_statistics":
                 Attendance_statistics_doc_dict["name"] = doc.name
@@ -1046,6 +1056,8 @@ def get_doc(request):
                                                         "ui=zh-CN&rs=zh-CN&WOPISrc=http://%s/wopi/files/%s" % \
                                                         (wopiserver, hostip, doc.path)
                 Attendance_statistics_doc_dict["createtime"] = doc.create_time.strftime("%Y-%m-%d")
+                Attendance_statistics_doc_dict["file"] = "http://%s/doc_upload/%s" % (hostip, doc.path)
+                Attendance_statistics_doc_dict["role"] = request.session["role"]
                 Attendance_statistics_doc_list.append(Attendance_statistics_doc_dict)
             elif doc.P_Type == "Grade":
                 Grade_doc_dict["name"] = doc.name
@@ -1053,6 +1065,8 @@ def get_doc(request):
                                         "ui=zh-CN&rs=zh-CN&WOPISrc=http://%s/wopi/files/%s" % \
                                         (wopiserver, hostip, doc.path)
                 Grade_doc_dict["createtime"] = doc.create_time.strftime("%Y-%m-%d")
+                Grade_doc_dict["file"] = "http://%s/doc_upload/%s" % (hostip, doc.path)
+                Grade_doc_dict["role"] = request.session["role"]
                 Grade_doc_list.append(Grade_doc_dict)
         if type == "doc_Office_Supplies":
             return JsonResponse({"Office_Supplies":Office_Supplies_doc_list},safe=False)
