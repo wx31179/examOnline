@@ -82,7 +82,7 @@ img{
                         <div class="panel-title">
                             办公用品
                             {% if request.session.role == "Admin" or request.session.role == "Editor"  %}
-                                <button class=" btn btn-xs btn-default" style="float: right" onclick="create_doc('Office_Supplies')">上传新文档</button>
+                                <a class=" btn btn-xs" style="float: right" onclick="create_doc('Office_Supplies')"><span class="glyphicon glyphicon-upload" data-toggle="tooltip" title="上传文档"></span></a>
                             {% endif %}
                         </div>
 
@@ -100,7 +100,7 @@ img{
                         <div class="panel-title">
                             考勤统计
                             {% if request.session.role == "Admin" or request.session.username == "vivian"  %}
-                                <button class=" btn btn-xs btn-default" style="float: right" onclick="create_doc('Attendance_statistics')">上传新文档</button>
+                                <a class=" btn btn-xs" style="float: right" onclick="create_doc('Attendance_statistics')"><span class="glyphicon glyphicon-upload" data-toggle="tooltip" title="上传文档"></span></a>
                             {% endif %}
                         </div>
                     </div>
@@ -120,7 +120,7 @@ img{
                         <div class="panel-title">
                             绩效评估
                             {% if request.session.role == "Admin" or request.session.username == "junqing.chen@hp.com"  %}
-                                <button class=" btn btn-xs btn-default" style="float: right" onclick="create_doc('Grade')">上传新文档</button>
+                                <a class=" btn btn-xs" style="float: right" onclick="create_doc('Grade')"><span class="glyphicon glyphicon-upload" data-toggle="tooltip" title="上传文档"></span></a>
                             {% endif %}
                         </div>
                     </div>
@@ -137,7 +137,7 @@ img{
         </div>
     </div>
 </body>
-<script>
+<script language="JavaScript">
 $(document).ready(function () {
    $.get("/get_doc/",{"type":"doc_Office_Supplies"},function (data) {
        var list="";
@@ -151,7 +151,7 @@ $(document).ready(function () {
                 list = list +
                     '<div style="padding-bottom: 5px">\n'+
                         '<a href="javascript:void(0)" onclick=opendoc_url('+'\"'+url+'\"'+')>'+name+'</a>\n'+
-                        '<a href='+'\"'+file+'\"'+' style="float: right" download >下载</a>\n'+
+                        '<a href='+'\"'+file+'\"'+' style="float: right" download ><span class="glyphicon glyphicon-download" data-toggle="tooltip" title="下载文档"></span></a>\n'+
                         '<span style="float: right;margin-right: 30px">'+time+'</span>\n'+
                     '</div>'
            } else{
@@ -177,7 +177,7 @@ $(document).ready(function () {
                 list = list +
                     '<div style="padding-bottom: 5px">\n'+
                         '<a href="javascript:void(0)" onclick=opendoc_url('+'\"'+url+'\"'+')>'+name+'</a>\n'+
-                        '<a href='+'\"'+file+'\"'+' style="float: right" download >下载</a>\n'+
+                        '<a href='+'\"'+file+'\"'+' style="float: right" download ><span class="glyphicon glyphicon-download" data-toggle="tooltip" title="下载文档"></span></a>\n'+
                         '<span style="float: right;margin-right: 30px">'+time+'</span>\n'+
                     '</div>'
            } else{
@@ -202,7 +202,7 @@ $(document).ready(function () {
                 list = list +
                         '<div style="padding-bottom: 5px">\n'+
                             '<a href="javascript:void(0)" onclick=opendoc_url('+'\"'+url+'\"'+')>'+name+'</a>\n'+
-                            '<a href='+'\"'+file+'\"'+' style="float: right" download >下载</a>\n'+
+                            '<a href='+'\"'+file+'\"'+' style="float: right" download ><span class="glyphicon glyphicon-download" data-toggle="tooltip" title="下载文档"></span></a>\n'+
                             '<span style="float: right;margin-right: 30px">'+time+'</span>\n'+
                         '</div>'
            } else{
@@ -224,7 +224,7 @@ function create_doc(type) {
     }else {
         $('#'+'doc_'+type).before('<form role="form" method="post" id="'+'div_'+type+'\"'+'action="/create_doc/" enctype="multipart/form-data">\n'+
                             '<input name="type" value='+'\"'+type+'\"'+'hidden>\n'+
-                            '<input name="filename" class="btn btn-primary" type="file" style="margin:10px" required><button type="submit" class="btn btn-xs" style="margin:10px">上传</button>\xa0<button class="btn btn-xs" onclick="cancel('+'\''+'div_'+type+'\''+')">取消</a>\n'+
+                            '<input name="filename" class="btn btn-primary" type="file" style="margin:10px" required><button type="submit" class="btn btn-xs btn-primary" style="margin:10px">上传</button>\xa0<button class="btn btn-xs" onclick="cancel('+'\''+'div_'+type+'\''+')">取消</a>\n'+
                             '</form>')
     }
 

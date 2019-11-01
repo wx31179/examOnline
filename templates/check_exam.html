@@ -59,7 +59,7 @@ img{
 
 
 </body>
-<script>
+<script language="JavaScript">
     function delete_exam(id) {
         if (confirm("确定删除此题吗？")) {
             $.get('/delete_exam/', {"id": id}, function (data) {

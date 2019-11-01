@@ -24,7 +24,6 @@
                         <div class="input-group">
                             <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
                                 <select class="form-control" id="edit_project" name="project" required>
-                                    <option value=""></option>
                                     {%  for type in typelist %}
                                     <option value="{{ type.Total_Type_values}}">{{ type.Total_Type_values }}</option>
                                     {% endfor %}

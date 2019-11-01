@@ -1,12 +1,13 @@
 from __future__ import unicode_literals
 #from django.contrib.auth.decorators import login_required
 #from django.contrib.auth import authenticate, login, logout
-from .models import loginuser,type,exam,exam_answers,test_content,test_answer,doc_info,setting,roles,group_permissions
+from .models import loginuser,type,exam,exam_answers,test_content,test_answer,doc_info,setting,roles,group_permissions,mailgroup
 #from django.contrib import messages
 from django.shortcuts import HttpResponseRedirect, HttpResponse,redirect,render
 from django.http import JsonResponse,StreamingHttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+from django.http import FileResponse
 from examOnline.settings import DOC_ROOT
 from django.contrib.auth.hashers import make_password, check_password
 from xpinyin import Pinyin
@@ -48,6 +49,7 @@ def index(request):
                         else:
                             loginuser.objects.filter(username=username).update(last_login_time=datetime.datetime.now())
                             request.session["role"] = roles.objects.get(user_name=username).role_name
+                            request.session["project"] = loginuser.objects.get(username=username).P_Type
                             return HttpResponseRedirect('/%s/'%next)
                 except BaseException as e:
                     Message = {"message": "用户名或密码错误，请重新输入。"}
@@ -59,6 +61,7 @@ def index(request):
                     if password_auth:
                         request.session["username"] = username
                         request.session["password"] = password
+                        request.session["project"] = loginuser.objects.get(username=username).P_Type
                         loginuser.objects.filter(username=username).update(last_login_time=datetime.datetime.now())
                         request.session["role"] = roles.objects.get(user_name=username).role_name
                         return HttpResponseRedirect('/main/')
@@ -94,6 +97,7 @@ def index(request):
                         else:
                             loginuser.objects.filter(username=username).update(last_login_time=datetime.datetime.now())
                             request.session["role"] = roles.objects.get(user_name=username).role_name
+                            request.session["project"] = loginuser.objects.get(username=username).P_Type
                             return HttpResponseRedirect('/main/')
                 except BaseException as e:
                     Message = {"message": "%s"%e}
@@ -105,6 +109,7 @@ def index(request):
                     if password_auth:
                         request.session["username"] = username
                         request.session["password"] = password
+                        request.session["project"] = loginuser.objects.get(username=username).P_Type
                         loginuser.objects.filter(username=username).update(last_login_time=datetime.datetime.now())
                         request.session["role"] = roles.objects.get(user_name=username).role_name
                         return HttpResponseRedirect('/main/')
@@ -128,7 +133,17 @@ def public_office(request):
     return render(request,'../templates/public_office.html', {"message": json.dumps(Message)})
 
 def person_setting(request):
-    return render(request, '../templates/person_setting.html')
+    if request.method == "GET":
+        groupinfo = mailgroup.objects.filter(group_submitter=request.session["username"]).values()
+        grouplist = [i for i in groupinfo]
+        for email in grouplist:
+            email["mail_to"] = email["mail_to"].strip(";").strip().split(";")
+            email["cc_to"] = email["cc_to"].strip(";").split(";")
+            email["bcc_to"] = email["bcc_to"].strip(";").split(";")
+        Message = {"message": "start"}
+        return render(request, '../templates/person_setting.html', {"message": json.dumps(Message),
+                                                                    "grouplist":grouplist,
+                                                                    })
 
 def person_meassage(request):
     return render(request, '../templates/person_meassage.html')
@@ -143,6 +158,8 @@ def edit_user_info(request):
     else:
         project = request.POST.get("project")
         loginuser.objects.filter(username=request.session["username"]).update(P_Type=project)
+        roles.objects.filter(user_name=request.session["username"]).update(comment=project)
+        request.session["project"] = loginuser.objects.get(username=request.session["username"]).P_Type
         return HttpResponseRedirect('/main/')
 
 def userlogout(request):
@@ -875,6 +892,16 @@ def file_upload(request):
         upload_info = json.dumps(upload_info)
         return HttpResponse(upload_info, content_type="application/json")
 
+#此为处理前端文件下载的函数
+def download_file(request):
+    if request.method == "GET":
+        filename = request.GET.get("filename")
+        file = open("%s/%s"%(DOC_ROOT,filename),'rb')
+        response = FileResponse(file)
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="%s"'%filename
+        return response
+
 #此为office online处理函数
 def file_iterator(filename,chunk_size=512):
     '''read file'''
@@ -885,7 +912,6 @@ def file_iterator(filename,chunk_size=512):
                 yield c
             else:
                 break
-
 
 @csrf_exempt
 def wopiGetFileInfo(request,fileid = "test.txt"):
@@ -936,7 +962,6 @@ def wopiFileContents(request,fileid='test.txt'):
             f.write(request.body)
             f.close()
         return HttpResponse('')
-
 
 #此为处理前端js函数
 def check_user(request):
@@ -1047,7 +1072,7 @@ def get_doc(request):
                                                   "ui=zh-CN&rs=zh-CN&WOPISrc=http://%s/wopi/files/%s" % \
                                                   (wopiserver, hostip, doc.path)
                 Office_Supplies_doc_dict["createtime"] = doc.create_time.strftime("%Y-%m-%d")
-                Office_Supplies_doc_dict["file"] = "http://%s/doc_upload/%s"%(hostip,doc.path)
+                Office_Supplies_doc_dict["file"] = "http://%s/download_file/?filename=%s"%(hostip,doc.path)
                 Office_Supplies_doc_dict["role"] = request.session["role"]
                 Office_Supplies_doc_list.append(Office_Supplies_doc_dict)
             elif doc.P_Type == "Attendance_statistics":
@@ -1056,7 +1081,7 @@ def get_doc(request):
                                                         "ui=zh-CN&rs=zh-CN&WOPISrc=http://%s/wopi/files/%s" % \
                                                         (wopiserver, hostip, doc.path)
                 Attendance_statistics_doc_dict["createtime"] = doc.create_time.strftime("%Y-%m-%d")
-                Attendance_statistics_doc_dict["file"] = "http://%s/doc_upload/%s" % (hostip, doc.path)
+                Attendance_statistics_doc_dict["file"] = "http://%s/download_file/?filename=%s" % (hostip, doc.path)
                 Attendance_statistics_doc_dict["role"] = request.session["role"]
                 Attendance_statistics_doc_list.append(Attendance_statistics_doc_dict)
             elif doc.P_Type == "Grade":
@@ -1065,7 +1090,7 @@ def get_doc(request):
                                         "ui=zh-CN&rs=zh-CN&WOPISrc=http://%s/wopi/files/%s" % \
                                         (wopiserver, hostip, doc.path)
                 Grade_doc_dict["createtime"] = doc.create_time.strftime("%Y-%m-%d")
-                Grade_doc_dict["file"] = "http://%s/doc_upload/%s" % (hostip, doc.path)
+                Grade_doc_dict["file"] = "http://%s/download_file/?filename=%s" % (hostip, doc.path)
                 Grade_doc_dict["role"] = request.session["role"]
                 Grade_doc_list.append(Grade_doc_dict)
         if type == "doc_Office_Supplies":
@@ -1074,3 +1099,43 @@ def get_doc(request):
             return JsonResponse({"Attendance_statistics": Attendance_statistics_doc_list}, safe=False)
         else:
             return JsonResponse({"Grade": Grade_doc_list}, safe=False)
+
+@csrf_exempt
+def edit_project(request):
+    if request.method == "GET":
+        typelist = []
+        user = request.GET.get("user")
+        project = loginuser.objects.get(username=user).P_Type
+        project_typelist = type.objects.filter(Total_Type="P_Type").values_list("Total_Type_values").exclude(Total_Type_values=project)
+        for types in project_typelist:
+            typelist.append(types)
+        return JsonResponse({"project":project,"project_typelist":typelist})
+    else:
+        project = request.POST.get("project_type")
+        try:
+            loginuser.objects.filter(username=request.session["username"]).update(P_Type=project)
+            roles.objects.filter(user_name=request.session["username"]).update(comment=project)
+            request.session["project"] = project
+            return redirect('/person_setting/')
+        except BaseException as e:
+            Message = {"message": e}
+            return render(request, '../templates/person_setting.html', {"message": json.dumps(Message)})
+
+@csrf_exempt
+def create_group(request):
+    if request.method == 'POST':
+        user = request.POST.get("user")
+        tittle = request.POST.get("tittle")
+        mail_to = request.POST.get("mail_to")
+        cc_to = request.POST.get("cc_to")
+        bcc_to = request.POST.get("bcc_to")
+        userstamp = user.split("@")[0].replace(".","")
+        timestamp = time.strftime("%Y%m%d%H%M%S", time.localtime())
+        mailgroup.objects.create(group_id=userstamp+timestamp,
+                                 group_submitter=user,
+                                 group_name=tittle,
+                                 mail_to=mail_to,
+                                 cc_to=cc_to,
+                                 bcc_to=bcc_to,
+                                 create_time=datetime.datetime.now())
+        return redirect("/person_setting/")

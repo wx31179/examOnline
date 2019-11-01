@@ -39,7 +39,7 @@
                         <td align="center">{{ test.create_time|date:'Y-m-d H:i:s'}}</td>
                         <td align="center">{{ test.submitter}}</td>
                         <td align="center">{{ test.correct_rate}}</td>
-                        <td align="center"><a href={% url 'check_test' %}?id={{ test.test_id }}>查看</a></td>
+                        <td align="center"><a href={% url 'check_test' %}?id={{ test.test_id }}><span class="glyphicon glyphicon-eye-open" data-toggle="tooltip" title="查看"></span></a></td>
                     </tr>
                 {% endfor %}
                 </tbody>

@@ -58,7 +58,7 @@ img{
                                                         <td align="center">{{ exam.create_Time|date:'Y-m-d H:i:s'}}</td>
                                                         <td align="center">{{ exam.mod_Time|date:'Y-m-d H:i:s'}}</td>
                                                         <td align="center">{{ exam.submitter}}</td>
-                                                        <td align="center"><a href="javascript:void(0)" onclick =check_tab("{% url 'check_exam' %}?id={{ exam.exam_id }}","{{ exam.id }}","{{ exam.exam_id }}","查看题目")>查看</a> <a href="javascript:void(0)" onclick=check_tab("{% url 'edit_exam' %}?id={{ exam.exam_id }}&type={{ exam.T_type }}","{{ exam.id }}","{{ exam.exam_id }}","修改题目")>修改</a> <a href="javascript:void(0)" onclick="delete_exam('{{ exam.exam_id }}')">删除</a></td>
+                                                        <td align="center"><a href="javascript:void(0)" onclick =check_tab("{% url 'check_exam' %}?id={{ exam.exam_id }}","{{ exam.id }}","{{ exam.exam_id }}","查看题目")><span class="glyphicon glyphicon-eye-open" data-toggle="tooltip" title="查看"></span></a> &nbsp&nbsp&nbsp<a href="javascript:void(0)" onclick=check_tab("{% url 'edit_exam' %}?id={{ exam.exam_id }}&type={{ exam.T_type }}","{{ exam.id }}","{{ exam.exam_id }}","修改题目")><span class="glyphicon glyphicon-edit" data-toggle="tooltip" title="修改"></span></a>&nbsp&nbsp&nbsp <a href="javascript:void(0)" onclick="delete_exam('{{ exam.exam_id }}')"><span class="glyphicon glyphicon-trash" data-toggle="tooltip" title="删除"></span></a></td>
                                                     </tr>
                                                 {% endfor %}
                                                 </tbody>
@@ -101,7 +101,7 @@ img{
         </div>
     </div>
 </body>
-<script>
+<script language="JavaScript">
 $(document).ready(function() {
     $("[data-toggle='popover']").popover();
     $('#my_exam_1').DataTable();

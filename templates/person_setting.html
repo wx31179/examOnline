@@ -2,10 +2,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <link href="{% static 'css/bootstrap.min.css' %}?v=5.8" rel="stylesheet">
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
+<style>
+    dd{
+        font-size: 20px;
+    }
+    dl{
+        font-size: 25px;
+    }
+    p{
+      word-wrap: break-word;
+      word-break: break-all;
+      overflow: hidden;
+    }
+</style>
 <body>
-<img style="padding-top:200px;padding-left: 500px" alt="建设中" src="{% static 'images/build.gif' %}">
+<div class="container-fluid">
+    <div class="row clearfix" style="margin-top: 50px">
+        <div class="col-lg-3">
+
+        </div>
+        <div class="col-lg-4">
+            <dl>
+                <dt>个人信息：</dt>
+                <dd>当前登录用户：{{ request.session.username }}</dd>
+                <div id="project">
+                    <dd>所属项目组：{{ request.session.project }}&nbsp&nbsp&nbsp&nbsp<a href="javascript:void(0)" onclick="chage_project('{{ request.session.username }}','project')"><span class="glyphicon glyphicon-edit" data-toggle="tooltip" title="修改"></span></a> </dd>
+                </div>
+                <dd>当前连接IP：{{ request.META.REMOTE_ADDR }}</dd>
+            </dl>
+        </div>
+        <div class="col-lg-4">
+
+        </div>
+    </div>
+    <hr>
+    <div class="row clearfix">
+        <div class="col-lg-3">
+
+        </div>
+        <div class="col-lg-4">
+            <dl>
+                <dt>邮件组：&nbsp&nbsp<a href="javascript:void(0)" onclick="create_group('{{ request.session.username }}','NewGroup')"><span class="glyphicon glyphicon-plus-sign" data-toggle="tooltip" title="添加"></span></a></dt>
+            </dl>
+        </div>
+        <div class="col-lg-5">
+
+        </div>
+    </div>
+    <div class="row clearfix">
+        <div class="col-lg-3">
+
+        </div>
+        <div class="col-lg-4">
+            <div id="NewGroup">
+            </div>
+            <div class="panel-group" id="accordin">
+                {% for group in grouplist %}
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordin" href="#{{ group.group_id }}">
+                                邮件组名：{{ group.group_name }}<br>
+                                创建时间：{{ group.create_time|date:'Y-m-d' }}
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="{{ group.group_id }}" class="panel-collapse collapse">
+                        <div class="panel-body" id="{{ group.group_id }}_body">
+                            收件人：{% for mailto in group.mail_to %}
+                                    <span class="glyphicon glyphicon-user">{{ mailto}}</span>;
+                                    {% endfor %}
+                            <hr>
+                            抄送：{% for ccto in group.cc_to %}
+                                        {% if ccto != "" %}
+                                        <span class="glyphicon glyphicon-user">{{ ccto}}</span>;
+                                        {% endif %}
+                                    {% endfor %}
+                            <hr>
+                            密送：{% for bccto in group.bcc_to %}
+                                        {% if bccto != ""  %}
+                                        <span class="glyphicon glyphicon-user">{{ bccto}}</span>;
+                                        {% endif %}
+                                    {% endfor %}
+                            <hr>
+                            <a class="btn btn-md" style="float: right"><span class="glyphicon glyphicon-trash" data-toggle="tooltip" title="删除"></span></a><a class="btn btn-md" style="float: right"><span class="glyphicon glyphicon-edit" data-toggle="tooltip" title="修改"></span></a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="row clearfix">
+        <div class="col-lg-12">
+            <div id="message" class="modal-footer">
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
 </body>
+<script language="JavaScript">
+    var current_project;
+    var current_group;
+    function chage_project(user,type) {
+        current_project = document.getElementById(type).innerHTML;
+        $.get('/edit_project/',{'user':user},function (data) {
+            document.getElementById("project").innerHTML = '<dd>所属项目组：\n' +
+                                                                '<form role="form" method="post" action="/edit_project/">\n'+
+                                                                    '<select id="project_type" name="project_type" class="form-control" required>\n' +
+                                                                        '<option value='+data["project"]+ ' '+'selected>'+data["project"]+'</option>\n'+
+                                                                    '</select>\n'+
+                                                                    '<button type="submit" class="btn btn-xs btn-primary" style="margin:10px">修改</button>\xa0<button class="btn btn-xs" onclick="'+'cancel(\''+type+'\')'+'">取消</a>\n'+
+                                                                '</form>\n'+
+                                                            '</dd>';
+            for(var i in data["project_typelist"]){
+                $("#project_type").append('<option value='+'\"'+data["project_typelist"][i]+'\"'+'>'+data["project_typelist"][i]+'</option>')
+            }
+        })
+
+    }
+
+    function create_group(user,type) {
+        if(document.getElementById(type+"_tittle")){
+            alert("请先完成当前邮件组的创建！")
+        }else {
+        current_group = document.getElementById(type).innerHTML;
+        document.getElementById(type).innerHTML ='<form id="qwe" role="form" method="POST" action="/create_group/" style="margin-bottom:30px">\n'+
+                                                    '<div class="form-group">\n'+
+                                                        '<div class="input-group">\n'+
+                                                            '<label for="'+type+'_tittle">组名：</label>\n'+
+                                                            '<input class="form-control" type="text" id="'+type+'_tittle" name="tittle" required>\n'+
+                                                        '</div>\n'+
+                                                        '<div class="input-group">\n'+
+                                                            '<label for="mail_to">收件人：</label><br>\n'+
+                                                            '<textarea class="form-control" row="4" id="mail_to" name="mail_to" style="width:500px" placeholder="邮箱之间使用；分割" required></textarea>\n'+
+                                                        '</div>\n'+
+                                                        '<div class="input-group">\n'+
+                                                            '<label for="cc_to">抄送人：</label><br>\n'+
+                                                            '<textarea class="form-control" row="4" id="cc_to" name="cc_to" style="width:500px" placeholder="邮箱之间使用；分割"></textarea>\n'+
+                                                        '</div>\n'+
+                                                        '<div class="input-group">\n'+
+                                                            '<label for="bcc_to">密送人：</label><br>\n'+
+                                                            '<textarea class="form-control" row="4" id="bcc_to" name="bcc_to" style="width:500px" placeholder="邮箱之间使用；分割"></textarea>\n'+
+                                                        '</div>\n'+
+                                                        '<input value="'+user+'" name="user" hidden>\n'+
+                                                    '</div>\n'+
+                                                    '<button class="btn btn-primary" type="submit">提交</button> <button class="btn btn-defaut" onclick="cancel(\''+type+'\')">取消</button>\n'+
+                                                '</form>'
+        }
+    }
+    function cancel(type) {
+        if(type==="project"){
+            document.getElementById(type).innerHTML = current_project
+        } else{
+            document.getElementById(type).innerHTML = current_group
+        }
+
+
+    }
+
+
+    var message = {{ message|safe }};
+    if(message["message"] !== "start"){
+        document.getElementById("message").innerHTML = '<div class="alert alert-danger">'+message["message"]+'</div>'
+    }
+</script>
 </html>

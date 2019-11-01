@@ -20,7 +20,7 @@ from django.conf.urls import url,include
 from exam_online.views import index,main,userlogout,create_exam,exam_temp,iframe_main,my_exam,file_upload\
     ,edit_exam,edit_exam_json,check_exam,delete_exam,start_test,test_record,test_analysis,analysisinfo,\
     check_test,check_doc,upload_doc,edit_user_info,public_office,person_setting,person_meassage,backup_setting,\
-    check_user,delete_doc,edit_doc,create_doc,get_doc
+    check_user,delete_doc,edit_doc,create_doc,get_doc,edit_project,download_file,create_group
 from django.views.static import serve
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -53,8 +53,11 @@ urlpatterns = [
     url(r'^delete_doc/$', delete_doc, name='delete_doc'),
     url(r'^create_doc/$', create_doc, name='create_doc'),
     url(r'^get_doc/$', get_doc, name='get_doc'),
+    url(r'^edit_project/$', edit_project, name='edit_project'),
+    url(r'^create_group/$', create_group, name='create_group'),
     #image url
     url(r'^upload/',file_upload),
+    url(r'^download_file/$', download_file, name='download_file'),
     url(r'^uploads/(?P<path>.*)$',serve,{'document_root':settings.UPLOAD_ROOT}),
     #office online url
     url(r'^wopi/', include('exam_online.urls')),

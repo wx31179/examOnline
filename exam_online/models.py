@@ -80,3 +80,13 @@ class group_permissions(models.Model):
     edit = models.BooleanField(default=0)
     query = models.BooleanField(default=0)
     view = models.CharField(max_length=10,null=True)
+
+class mailgroup(models.Model):
+    group_id = models.CharField(max_length=100)
+    group_submitter = models.CharField(max_length=100)
+    group_name = models.CharField(max_length=100)
+    mail_to = models.TextField()
+    cc_to = models.TextField(null=True)
+    bcc_to = models.TextField(null=True)
+    create_time = models.DateTimeField("邮件组创建时间")
+

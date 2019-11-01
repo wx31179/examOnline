@@ -61,7 +61,7 @@
                                             <td align="left">{{ doc.create_time|date:'Y-m-d H:i:s'}}</td>
                                             <td align="left">{{ doc.submitter}}</td>
                                             {% if request.session.username == doc.submitter or request.session.role != "User" and request.session.role != "Editor"%}
-                                                <td align="left" id="{{ doc.doc_id }}_action"><a href="javascript:void(0);" onclick="delete_doc('{{ doc.name }}')">删除</a>  <a href="javascript:void(0)" onclick="edit_doc('{{ doc.doc_id }}')">修改</a> </td>
+                                                <td align="left" id="{{ doc.doc_id }}_action"><a href="javascript:void(0)" onclick="edit_doc('{{ doc.doc_id }}')"><span class="glyphicon glyphicon-edit" data-toggle="tooltip" title="修改"></span></a>&nbsp&nbsp&nbsp<a href="javascript:void(0);" onclick="delete_doc('{{ doc.name }}')"><span class="glyphicon glyphicon-trash" data-toggle="tooltip" title="删除"></span></a> </td>
                                             {% else %}
                                                 <td align="left">删除 修改</td>
                                             {% endif %}
@@ -79,7 +79,7 @@
 
     </div>
 </body>
-<script>
+<script language="JavaScript">
     $(document).ready(function() {
         $('#docData').DataTable();
     });
@@ -170,8 +170,8 @@
             document.getElementById(doc_id+"_type").innerHTML = '<select class="form-control" id='+'\"'+doc_id+'_type_value'+'\"'+'required>\n'+
                                                                     '<option value='+'\"'+data["docinfo"]["P_Type"]+'\"'+'selected>'+data["docinfo"]["P_Type"]+'</option>\n'+
                                                                 '</select>';
-            document.getElementById(doc_id+"_action").innerHTML = '<a href="javascript:void(0);" onclick="submit('+'\''+doc_id+'\''+')">'+ '提交'+'</a>\n'+
-                                                                    '<a href="javascript:void(0);" onclick="cancel('+'\''+doc_id+'\''+')">'+ '取消'+'</a>\n';
+            document.getElementById(doc_id+"_action").innerHTML = '<a href="javascript:void(0);" onclick="submit('+'\''+doc_id+'\''+')">'+ '<span class="glyphicon glyphicon-save" data-toggle="tooltip" title="保存修改"></span>'+'</a>\xa0\xa0\n'+
+                                                                    '<a href="javascript:void(0);" onclick="cancel('+'\''+doc_id+'\''+')">'+ '<span class="glyphicon glyphicon-remove" data-toggle="tooltip" title="取消"></span>'+'</a>\n';
             for(var i in data["typelist"]){
                 $("#"+doc_id+"_type_value").append('<option value='+'\"'+data["typelist"][i]+'\"'+'>'+data["typelist"][i]+'</option>')
             }
@@ -189,8 +189,9 @@
             document.getElementById(doc_id+"_tag").innerHTML = '<td align="left" id='+doc_id+'_tag'+'>'+data["docinfo"]["tag"]+'</td>';
             document.getElementById(doc_id+"_edit").innerHTML = '<td align="left" id='+doc_id+'_edit'+'>'+edit+'</td>';
             document.getElementById(doc_id+"_type").innerHTML = '<td align="left" id='+doc_id+'_type'+'>'+data["docinfo"]["P_Type"]+'</td>';
-            document.getElementById(doc_id+"_action").innerHTML = '<a href="javascript:woid(0)" onclick="delete_doc('+'\''+data["docinfo"]["name"]+'\''+')">删除</a>\n'+
-                                                                  '<a href="javascript:woid(0)" onclick="edit_doc('+'\''+data["docinfo"]["doc_id"]+'\''+')">修改</a>'
+            document.getElementById(doc_id+"_action").innerHTML = '<a href="javascript:woid(0)" onclick="edit_doc('+'\''+data["docinfo"]["doc_id"]+'\''+')"><span class="glyphicon glyphicon-edit" data-toggle="tooltip" title="修改"></span></a>\xa0\xa0\n'+
+                                                                 '<a href="javascript:woid(0)" onclick="delete_doc('+'\''+data["docinfo"]["name"]+'\''+')"><span class="glyphicon glyphicon-trash" data-toggle="tooltip" title="删除"></span></a>'
+
         })
 
     }
